@@ -1,5 +1,5 @@
 export const EnvConfig = {
-	BASE_URL_API: "", // future api url
-    PRIMARY_COLOR: "",
-    SECONDARY_COLOR: "",
+	BASE_URL_API: "",
+    PRIMARY_COLOR: "#165dfc",
+    SECONDARY_COLOR: "#eff6ff",
 };

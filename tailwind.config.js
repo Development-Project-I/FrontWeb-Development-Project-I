@@ -1,10 +1,14 @@
 import { EnvConfig } from "./src/config/env.config";
+import textPlugin, { textPresetStyles } from "./src/plugins/text-plugin.js";
+
+const presetSafelist = Object.keys(textPresetStyles).map((key) => `preset-${key}`);
 
 module.exports = {
     content: [
         "./index.html",
         "./src/**/*.{js,ts,jsx,tsx}",
     ],
+    safelist: [...presetSafelist, "font-regular", "font-medium", "font-semibold", "font-bold"],
     theme: {
         extend: {
             colors: {
@@ -22,7 +26,10 @@ module.exports = {
 
                 "transparent": "rgba(0,0,0,0)",
             },
+            fontFamily: {
+                sans: ["Roboto", "ui-sans-serif", "system-ui", "sans-serif"],
+            },
         },
     },
-    plugins: [],
-}
+    plugins: [textPlugin],
+};
