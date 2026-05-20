@@ -16,7 +16,7 @@ export function AppRoutes() {
     <Routes>
       <Route path="/" element={<Login />} />
       <Route path="/login" element={<Login />} />
-      <Route path="/signin" element={<></>} />
+      <Route path="/signin" element={<Navigate to="/login" replace />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/estoque" element={<Estoque />} />
       <Route path="/planejamento-aulas" element={<PlanejamentoAulasHome />} />
