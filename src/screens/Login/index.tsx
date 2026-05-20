@@ -31,9 +31,6 @@ export function Login() {
     <div className="flex min-h-screen items-center justify-center bg-slate-100/90 p-4">
       <div className="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-xl">
         <header className="bg-gradient-to-r from-blue-600 via-blue-600 to-violet-600 px-8 py-10 text-center">
-          <h1 className="text-3xl font-bold tracking-tight text-white">
-            GastroPlan
-          </h1>
           <Text preset="headline_20/25" fontWeight="bold" color="white">
             GastroPlan
           </Text>
