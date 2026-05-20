@@ -409,7 +409,6 @@ export function Estoque() {
   }, [products, search, category, validity, sortBy]);
 
   function handleAddItem(payload: AddStockItemPayload) {
-    let merged = false;
     let toastTitle = "Item adicionado";
     let toastMessage = `${payload.name.trim()} foi cadastrado no estoque.`;
 
@@ -417,7 +416,6 @@ export function Estoque() {
       const existing = findMatchingProduct(prev, payload);
 
       if (existing) {
-        merged = true;
         const updated = mergeStockAddition(existing, payload);
         toastTitle = "Estoque atualizado";
         toastMessage = `+${payload.quantity} ${payload.unit} em ${updated.name}. Total: ${updated.quantity} ${updated.unit}. Validade: ${updated.expirationDate}.`;

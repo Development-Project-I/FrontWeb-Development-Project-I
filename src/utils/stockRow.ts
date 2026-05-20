@@ -20,7 +20,10 @@ export function isoToBr(iso: string): string {
   return `${d}/${m}/${y}`;
 }
 
-export function resolveMinStock(row: StockProductRow, fallback?: number): number {
+export function resolveMinStock(
+  row: Pick<StockProductRow, "quantity" | "minStock">,
+  fallback?: number,
+): number {
   if (row.minStock != null) return row.minStock;
   if (fallback != null) return fallback;
   return Math.max(10, Math.ceil(row.quantity * 0.2));
@@ -79,7 +82,9 @@ export function computeExpirationMeta(
   };
 }
 
-export function applyRowPresentation(row: StockProductRow): StockProductRow {
+export function applyRowPresentation(
+  row: Omit<StockProductRow, "rowVariant" | "clockTone">,
+): StockProductRow {
   const { status, expirationTone: baseTone } = row;
 
   let rowVariant: StockRowVariant = "default";
@@ -111,10 +116,7 @@ export function applyRowPresentation(row: StockProductRow): StockProductRow {
 }
 
 export function buildProductRow(
-  partial: Omit<StockProductRow, "rowVariant" | "clockTone"> & {
-    rowVariant?: StockRowVariant;
-    clockTone?: "red" | "amber";
-  },
+  partial: Omit<StockProductRow, "rowVariant" | "clockTone">,
 ): StockProductRow {
   const minStock = resolveMinStock(partial);
   const status = computeStockStatus(partial.quantity, minStock);
