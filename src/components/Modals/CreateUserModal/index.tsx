@@ -275,7 +275,7 @@ export function CreateUserModal({ isOpen, onClose, onAdd }: CreateUserModalProps
                   id={`${baseId}-senha`}
                   type="password"
                   required
-                  minLength={6}
+                  minLength={8}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Senha de acesso"

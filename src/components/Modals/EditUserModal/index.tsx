@@ -241,6 +241,7 @@ export function EditUserModal({
               <input
                 id={`${baseId}-password`}
                 type="password"
+                minLength={8}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Deixe em branco para manter a atual"
