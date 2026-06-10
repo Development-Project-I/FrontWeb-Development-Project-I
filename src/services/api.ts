@@ -2,6 +2,19 @@ import axios, { AxiosError, isAxiosError } from "axios";
 import { EnvConfig } from "../config/env.config";
 
 const API_TIMEOUT_MS = 60_000;
+const AUTH_STORAGE_KEY = "gastroplan_auth";
+
+function getStoredAccessToken(): string | null {
+  try {
+    const raw = localStorage.getItem(AUTH_STORAGE_KEY);
+    if (!raw) return null;
+
+    const parsed = JSON.parse(raw) as { accessToken?: unknown };
+    return typeof parsed.accessToken === "string" ? parsed.accessToken : null;
+  } catch {
+    return null;
+  }
+}
 
 const createApiInstance = (baseURL?: string | null) => {
   const axiosInstance = axios.create({
@@ -14,6 +27,11 @@ const createApiInstance = (baseURL?: string | null) => {
 
   axiosInstance.interceptors.request.use(
     async (config) => {
+      const token = getStoredAccessToken();
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+
       console.log("🚀 Request:", {
         method: config.method?.toUpperCase(),
         url: config.url,

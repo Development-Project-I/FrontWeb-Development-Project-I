@@ -15,7 +15,10 @@ import { aulasService } from "../../services/aulas.service";
 import { usersService } from "../../services/users.service";
 import { useToast } from "../../contexts/ToastContext";
 import { fetchInventoryItems } from "../../data/stock";
-import { mapApiAulaToLessonDetail } from "../../utils/apiMappers";
+import {
+  aulaNeedsInventoryFallback,
+  mapApiAulaToLessonDetail,
+} from "../../utils/apiMappers";
 import { ConfirmDropdown } from "../../components/ConfirmDropdown";
 import { Icon } from "../../components/Icon";
 import { Text } from "../../components/Text";
@@ -43,16 +46,21 @@ export function LessonDetails() {
     if (!lessonId || deletedRef.current) return;
 
     try {
-      const [aulaRes, inventory, usersRes] = await Promise.all([
-        aulasService.getAulaById(lessonId),
-        fetchInventoryItems(),
+      const aulaRes = await aulasService.getAulaById(lessonId);
+
+      if (deletedRef.current) return;
+
+      const [inventory, usersRes] = await Promise.all([
+        aulaNeedsInventoryFallback([aulaRes.data])
+          ? fetchInventoryItems()
+          : Promise.resolve([]),
         usersService.getUsers(),
       ]);
 
       if (deletedRef.current) return;
 
       const professor = usersRes.data.find(
-        (user) => user.id === aulaRes.data.professorId,
+        (user) => String(user.id) === String(aulaRes.data.professorId),
       );
       const professorName = professor
         ? [professor.name, professor.sobrenome].filter(Boolean).join(" ").trim()

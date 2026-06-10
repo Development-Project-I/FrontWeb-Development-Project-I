@@ -1,10 +1,14 @@
 import clsx from "clsx";
+import { useRef, useState } from "react";
 import type { UserRole, UserStatus } from "../../../constants/users";
+import { ConfirmDropdown } from "../../ConfirmDropdown";
 import { Icon } from "../../Icon";
 
 export interface UserListRow {
   id: string;
   name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   role: UserRole;
   status: UserStatus;
@@ -14,6 +18,9 @@ export interface UserListRow {
 export interface UsersTableProps {
   rows: UserListRow[];
   className?: string;
+  onEdit?: (row: UserListRow) => void;
+  onDelete?: (row: UserListRow) => void | Promise<void>;
+  deletingUserId?: string | null;
 }
 
 const roleBadge: Record<UserRole, string> = {
@@ -27,7 +34,16 @@ const statusBadge: Record<UserStatus, string> = {
   Inativo: "bg-neutral-100 text-neutral-600",
 };
 
-export function UsersTable({ rows, className }: UsersTableProps) {
+export function UsersTable({
+  rows,
+  className,
+  onEdit,
+  onDelete,
+  deletingUserId = null,
+}: UsersTableProps) {
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const deleteAnchorRef = useRef<HTMLButtonElement>(null);
+
   return (
     <section
       className={clsx(
@@ -129,19 +145,48 @@ export function UsersTable({ rows, className }: UsersTableProps) {
                     <div className="flex items-center justify-center gap-2">
                       <button
                         type="button"
+                        onClick={() => onEdit?.(row)}
                         className="preset-body_14/20 inline-flex items-center gap-1.5 font-semibold text-blue-600 transition-colors hover:text-blue-700"
                         aria-label={`Editar ${row.name}`}
                       >
                         <Icon name="SquarePen" className="size-4" strokeWidth={2} aria-hidden />
                         Editar
                       </button>
-                      <button
-                        type="button"
-                        className="rounded-md p-2 text-red-600 transition-colors hover:bg-red-50"
-                        aria-label={`Excluir ${row.name}`}
-                      >
-                        <Icon name="Trash2" className="size-4" strokeWidth={2} aria-hidden />
-                      </button>
+                      <div className="relative">
+                        <button
+                          type="button"
+                          ref={
+                            confirmDeleteId === row.id ? deleteAnchorRef : undefined
+                          }
+                          onClick={() => setConfirmDeleteId(row.id)}
+                          disabled={deletingUserId === row.id}
+                          className="rounded-md p-2 text-red-600 transition-colors hover:bg-red-50 disabled:opacity-50"
+                          aria-label={`Excluir ${row.name}`}
+                        >
+                          <Icon
+                            name={deletingUserId === row.id ? "Loader2" : "Trash2"}
+                            className={clsx(
+                              "size-4",
+                              deletingUserId === row.id && "animate-spin",
+                            )}
+                            strokeWidth={2}
+                            aria-hidden
+                          />
+                        </button>
+                        <ConfirmDropdown
+                          isOpen={confirmDeleteId === row.id}
+                          anchorRef={deleteAnchorRef}
+                          placement="top"
+                          onClose={() => setConfirmDeleteId(null)}
+                          onConfirm={() => {
+                            void onDelete?.(row);
+                            setConfirmDeleteId(null);
+                          }}
+                          message={`Deseja remover ${row.name} do sistema?`}
+                          confirmLabel="Excluir"
+                          isLoading={deletingUserId === row.id}
+                        />
+                      </div>
                     </div>
                   </td>
                 </tr>

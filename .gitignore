@@ -28,4 +28,5 @@ dist-ssr
 
 # Documentação interna / collection da API (não versionar)
 BACKEND_PENDENCIAS.md
+BACKEND_PENDENCIAS-atualizado.md
 gastroplanCollection.json

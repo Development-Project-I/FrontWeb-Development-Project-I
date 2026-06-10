@@ -4,10 +4,13 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "../../components/Button";
 import { Icon } from "../../components/Icon";
 import { Text } from "../../components/Text";
+import { getHomeRoute } from "../../config/permissions";
+import { normalizeAuthUser, useAuth } from "../../contexts/AuthContext";
 import { authService } from "../../services/auth.service";
 
 export function Login() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -19,11 +22,22 @@ export function Login() {
     setIsSubmitting(true);
 
     try {
-      await authService.postLogin({
+      const { data } = await authService.postLogin({
         identificador: email.trim(),
         password,
       });
-      navigate("/dashboard", { replace: true });
+
+      const user = normalizeAuthUser(data.user);
+      if (!user) {
+        throw new Error("Resposta de login inválida.");
+      }
+
+      login({
+        ...user,
+        accessToken:
+          typeof data.accessToken === "string" ? data.accessToken : undefined,
+      });
+      navigate(getHomeRoute(user.role), { replace: true });
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "E-mail ou senha incorretos.";

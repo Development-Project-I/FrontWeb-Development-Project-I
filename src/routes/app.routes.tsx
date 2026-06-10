@@ -1,4 +1,6 @@
 import { Navigate, Route, Routes } from "react-router-dom";
+import { getHomeRoute } from "../config/permissions";
+import { useAuth } from "../contexts/AuthContext";
 import { Dashboard } from "../screens/Dashboard";
 import { Estoque } from "../screens/Estoque";
 import {
@@ -10,6 +12,11 @@ import { Configuracoes } from "../screens/Configuracoes";
 import { Relatorios } from "../screens/Relatorios";
 import { Users } from "../screens/Users";
 import { Login } from "../screens/Login";
+
+function DefaultRedirect() {
+  const { user } = useAuth();
+  return <Navigate to={user ? getHomeRoute(user.role) : "/login"} replace />;
+}
 
 export function AppRoutes() {
   return (
@@ -25,7 +32,7 @@ export function AppRoutes() {
       <Route path="/usuarios" element={<Users />} />
       <Route path="/relatorios" element={<Relatorios />} />
       <Route path="/configuracoes" element={<Configuracoes />} />
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      <Route path="*" element={<DefaultRedirect />} />
     </Routes>
   );
 }

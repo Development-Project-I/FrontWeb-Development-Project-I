@@ -14,6 +14,8 @@ import { fetchInventoryItems } from "../../data/stock";
 import { aulasService } from "../../services/aulas.service";
 import { usersService } from "../../services/users.service";
 import {
+  aulaNeedsInventoryFallback,
+  isAulaCancelled,
   mapApiAulaToLessonDetail,
   mapIngredientToNextLessonCard,
   weekDayToApi,
@@ -34,25 +36,30 @@ export function PlanejamentoAulasHome() {
   const loadLessons = useCallback(async () => {
     setLoading(true);
     try {
-      const [aulasRes, inventory, usersRes] = await Promise.all([
-        aulasService.getAulas(),
-        fetchInventoryItems(),
+      const aulasRes = await aulasService.getAulas();
+      const activeAulas = aulasRes.data.filter((aula) => !isAulaCancelled(aula));
+
+      const [inventory, usersRes] = await Promise.all([
+        aulaNeedsInventoryFallback(activeAulas)
+          ? fetchInventoryItems()
+          : Promise.resolve([]),
         usersService.getUsers(),
       ]);
 
       const professorNames = new Map(
         usersRes.data.map((user) => [
-          user.id,
+          String(user.id),
           [user.name, user.sobrenome].filter(Boolean).join(" ").trim(),
         ]),
       );
 
       setLessons(
-        aulasRes.data.map((aula) =>
+        activeAulas.map((aula) =>
           mapApiAulaToLessonDetail(
             aula,
             inventory,
-            professorNames.get(aula.professorId),
+            professorNames.get(String(aula.professorId)) ??
+              (typeof aula.professorId === "string" ? aula.professorId : undefined),
           ),
         ),
       );

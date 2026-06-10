@@ -8,6 +8,7 @@ import {
   CreateUserModal,
   type AccessType,
 } from "../../components/Modals/CreateUserModal";
+import { EditUserModal } from "../../components/Modals/EditUserModal";
 import { useToast } from "../../contexts/ToastContext";
 import { usersService } from "../../services/users.service";
 import { Icon } from "../../components/Icon";
@@ -15,6 +16,7 @@ import { Text } from "../../components/Text";
 import {
   accessTypeToApiRole,
   mapApiUserToRow,
+  userRoleToAccessType,
 } from "../../utils/apiMappers";
 import type { UserListRow } from "../../components/Cards/UsersTable";
 
@@ -43,6 +45,9 @@ function buildSummary(rows: UserListRow[]) {
 export function Users() {
   const { showToast } = useToast();
   const [createOpen, setCreateOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState<UserListRow | null>(null);
+  const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
   const [rows, setRows] = useState<UserListRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -100,6 +105,81 @@ export function Users() {
 
     return list;
   }, [rows, search, role, sortBy]);
+
+  function handleEditUser(row: UserListRow) {
+    setEditingUser(row);
+    setEditOpen(true);
+  }
+
+  async function handleSaveUser(payload: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password?: string;
+    accessType: AccessType;
+  }) {
+    if (!editingUser) return;
+
+    const normalized = payload.email.trim().toLowerCase();
+    const emailTaken = rows.some(
+      (user) =>
+        user.id !== editingUser.id &&
+        user.email.toLowerCase() === normalized,
+    );
+
+    if (emailTaken) {
+      showToast(
+        "E-mail já cadastrado",
+        "Já existe outro usuário com este e-mail.",
+        "warning",
+      );
+      return;
+    }
+
+    try {
+      const { data } = await usersService.patchUser(editingUser.id, {
+        name: payload.firstName.trim(),
+        sobrenome: payload.lastName.trim(),
+        email: payload.email.trim(),
+        role: accessTypeToApiRole(payload.accessType),
+        ...(payload.password ? { password: payload.password } : {}),
+      });
+
+      setRows((prev) =>
+        prev.map((user) =>
+          user.id === editingUser.id ? mapApiUserToRow(data) : user,
+        ),
+      );
+      showToast(
+        "Usuário atualizado",
+        `${data.name} foi atualizado com sucesso.`,
+        "success",
+      );
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Erro ao atualizar usuário.";
+      showToast("Erro", message, "error");
+    }
+  }
+
+  async function handleDeleteUser(row: UserListRow) {
+    setDeletingUserId(row.id);
+    try {
+      await usersService.deleteUser(row.id);
+      setRows((prev) => prev.filter((user) => user.id !== row.id));
+      showToast(
+        "Usuário removido",
+        `${row.name} foi excluído do sistema.`,
+        "success",
+      );
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Erro ao remover usuário.";
+      showToast("Erro", message, "error");
+    } finally {
+      setDeletingUserId(null);
+    }
+  }
 
   async function handleAddUser(payload: {
     firstName: string;
@@ -166,6 +246,25 @@ export function Users() {
         onAdd={handleAddUser}
       />
 
+      <EditUserModal
+        isOpen={editOpen}
+        onClose={() => {
+          setEditOpen(false);
+          setEditingUser(null);
+        }}
+        initialData={
+          editingUser
+            ? {
+                firstName: editingUser.firstName,
+                lastName: editingUser.lastName,
+                email: editingUser.email,
+                accessType: userRoleToAccessType(editingUser.role),
+              }
+            : undefined
+        }
+        onSave={handleSaveUser}
+      />
+
       <div className="mt-8 grid w-full grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {summaryItems.map((item) => (
           <UserCard
@@ -203,7 +302,13 @@ export function Users() {
           />
         </div>
       ) : (
-        <UsersTable className="mt-6" rows={filteredRows} />
+        <UsersTable
+          className="mt-6"
+          rows={filteredRows}
+          onEdit={handleEditUser}
+          onDelete={handleDeleteUser}
+          deletingUserId={deletingUserId}
+        />
       )}
     </div>
   );

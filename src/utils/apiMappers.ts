@@ -9,15 +9,17 @@ import type {
   ScheduledLesson,
   WeekDayKey,
 } from "../data/lessons";
+import { ApiUserRole } from "../constants/apiUserRole";
 import type {
   ApiAula,
   ApiAulaIngredient,
   ApiInventoryItem,
+  ApiStockStatus,
   ApiUser,
-  ApiUserRole,
+  AulaInventoryItem,
 } from "../types/api";
 import type { AccessType } from "../components/Modals/CreateUserModal";
-import type { UserRole } from "../constants/users";
+import type { UserRole, UserStatus } from "../constants/users";
 import type { ClassSlotAccent } from "../components/Cards/WeeklyCalendar/ClassSlotCard";
 import {
   applyRowPresentation,
@@ -61,22 +63,33 @@ export function apiDateToBr(date: string): string {
 export function accessTypeToApiRole(type: AccessType): ApiUserRole {
   switch (type) {
     case "admin":
-      return "ADMIN";
+      return ApiUserRole.ADMIN;
     case "estoque":
-      return "ESTOQUISTA";
+      return ApiUserRole.ESTOQUISTA;
     case "professor":
-      return "PROFESSOR";
+      return ApiUserRole.PROFESSOR;
   }
 }
 
 export function apiRoleToUserRole(role: ApiUserRole): UserRole {
   switch (role) {
-    case "ADMIN":
+    case ApiUserRole.ADMIN:
       return "Administrador";
-    case "ESTOQUISTA":
+    case ApiUserRole.ESTOQUISTA:
       return "Estoquista";
-    case "PROFESSOR":
+    case ApiUserRole.PROFESSOR:
       return "Professor";
+  }
+}
+
+export function userRoleToAccessType(role: UserRole): AccessType {
+  switch (role) {
+    case "Administrador":
+      return "admin";
+    case "Estoquista":
+      return "estoque";
+    case "Professor":
+      return "professor";
   }
 }
 
@@ -107,22 +120,44 @@ export function mapInventoryToStockRow(item: ApiInventoryItem): StockProductRow 
   });
 }
 
+function formatLastAccess(value: string | undefined): string {
+  if (!value) return "—";
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "—";
+
+  return date.toLocaleString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function mapApiUserStatus(status: string | undefined): UserStatus {
+  if (status?.toUpperCase() === "INATIVO") return "Inativo";
+  return "Ativo";
+}
+
 export function mapApiUserToRow(user: ApiUser): UserListRow {
   const fullName = [user.name, user.sobrenome].filter(Boolean).join(" ").trim();
   return {
-    id: user.id,
+    id: String(user.id),
     name: fullName || user.name,
+    firstName: user.name,
+    lastName: user.sobrenome ?? "",
     email: user.email,
     role: apiRoleToUserRole(user.role),
-    status: "Ativo",
-    lastAccess: "—",
+    status: mapApiUserStatus(user.status),
+    lastAccess: formatLastAccess(user.lastAccess),
   };
 }
 
 export function mapApiUserToTeacher(user: ApiUser): Teacher {
   const fullName = [user.name, user.sobrenome].filter(Boolean).join(" ").trim();
   return {
-    id: user.id,
+    id: String(user.id),
     name: fullName || user.name,
     email: user.email,
     phone: "—",
@@ -150,6 +185,58 @@ function resolveIngredientStatus(
   if (available <= 0) return "SemEstoque";
   if (available < required) return "Baixo";
   return "OK";
+}
+
+function mapStockStatusToLessonStatus(
+  stockStatus: ApiStockStatus | undefined,
+  required: number,
+  available: number,
+): LessonIngredientStatus {
+  if (stockStatus === "SEM_ESTOQUE") return "SemEstoque";
+  if (stockStatus === "BAIXO") return "Baixo";
+  if (stockStatus === "OK") return "OK";
+  return resolveIngredientStatus(required, available);
+}
+
+export function mapInventoryItems(
+  items: AulaInventoryItem[],
+): LessonIngredientDetail[] {
+  return items.map((item) => ({
+    id: String(item.ingredientId),
+    stockId: item.itemInInventory === false ? undefined : String(item.itemId),
+    name: item.name,
+    category: item.category,
+    required: item.requiredQuantity,
+    requiredUnit: item.requiredUnit,
+    available: item.availableQuantity,
+    stockUnit: item.stockUnit,
+    status: mapStockStatusToLessonStatus(
+      item.stockStatus,
+      item.requiredQuantity,
+      item.availableQuantity,
+    ),
+  }));
+}
+
+export function isAulaCancelled(aula: ApiAula): boolean {
+  return aula.status === "CANCELADA";
+}
+
+export function resolveLessonIngredients(
+  aula: ApiAula,
+  inventory: ApiInventoryItem[] = [],
+): LessonIngredientDetail[] {
+  if (aula.inventoryItems?.length) {
+    return mapInventoryItems(aula.inventoryItems);
+  }
+  return mapAulaIngredients(aula.aulaIngredients, inventory);
+}
+
+export function aulaNeedsInventoryFallback(aulas: ApiAula[]): boolean {
+  return aulas.some(
+    (aula) =>
+      !aula.inventoryItems?.length && Boolean(aula.aulaIngredients?.length),
+  );
 }
 
 export function mapIngredientToNextLessonCard(
@@ -197,11 +284,11 @@ export function mapAulaIngredients(
 
 export function mapApiAulaToScheduledLesson(
   aula: ApiAula,
-  inventory: ApiInventoryItem[],
+  inventory: ApiInventoryItem[] = [],
   professorName?: string,
 ): ScheduledLesson {
   const day = apiDayToWeekDay(aula.dayOfWeek);
-  const ingredients = mapAulaIngredients(aula.aulaIngredients, inventory);
+  const ingredients = resolveLessonIngredients(aula, inventory);
 
   return {
     id: String(aula.id),
@@ -217,11 +304,11 @@ export function mapApiAulaToScheduledLesson(
 
 export function mapApiAulaToLessonDetail(
   aula: ApiAula,
-  inventory: ApiInventoryItem[],
+  inventory: ApiInventoryItem[] = [],
   professorName?: string,
 ): LessonDetail {
   const day = apiDayToWeekDay(aula.dayOfWeek);
-  const ingredients = mapAulaIngredients(aula.aulaIngredients, inventory);
+  const ingredients = resolveLessonIngredients(aula, inventory);
 
   return {
     id: String(aula.id),

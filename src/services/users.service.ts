@@ -1,4 +1,4 @@
-import type { ApiUser, CreateUserDto } from "../types/api";
+import type { ApiUser, CreateUserDto, UpdateUserDto } from "../types/api";
 import { apiUsers, getApiErrorMessage } from "./api";
 
 function parseUsersResponse(data: unknown): ApiUser[] {
@@ -38,6 +38,27 @@ export const usersService = {
       return { status: response.status, data: response.data };
     } catch (error) {
       throw new Error(getApiErrorMessage(error, "Erro ao buscar usuário."));
+    }
+  },
+
+  async patchUser(
+    id: string,
+    data: UpdateUserDto,
+  ): Promise<{ status: number; data: ApiUser }> {
+    try {
+      const response = await apiUsers().patch<ApiUser>(`/users/${id}`, data);
+      return { status: response.status, data: response.data };
+    } catch (error) {
+      throw new Error(getApiErrorMessage(error, "Erro ao atualizar usuário."));
+    }
+  },
+
+  async deleteUser(id: string): Promise<{ status: number; data: unknown }> {
+    try {
+      const response = await apiUsers().delete(`/users/${id}`);
+      return { status: response.status, data: response.data };
+    } catch (error) {
+      throw new Error(getApiErrorMessage(error, "Erro ao remover usuário."));
     }
   },
 };

@@ -1,4 +1,6 @@
-export type ApiUserRole = "ADMIN" | "ESTOQUISTA" | "PROFESSOR";
+import { ApiUserRole } from "../constants/apiUserRole";
+
+export { ApiUserRole };
 
 export interface ApiInventoryItem {
   id: number;
@@ -32,12 +34,24 @@ export interface UpdateInventoryDto {
   batchNumber?: string;
 }
 
+export type ApiUserStatus = "ATIVO" | "INATIVO";
+
 export interface ApiUser {
   id: string;
   name: string;
   sobrenome?: string;
   email: string;
   role: ApiUserRole;
+  status?: ApiUserStatus;
+  lastAccess?: string;
+}
+
+export interface UpdateUserDto {
+  name?: string;
+  sobrenome?: string;
+  email?: string;
+  password?: string;
+  role?: ApiUserRole;
 }
 
 export interface CreateUserDto {
@@ -53,11 +67,31 @@ export interface LoginDto {
   password: string;
 }
 
+export type ApiAulaStatus = "AGENDADA" | "CANCELADA" | "REALIZADA";
+
+export type ApiStockStatus = "OK" | "BAIXO" | "SEM_ESTOQUE";
+
 export interface ApiAulaIngredient {
   id: number;
   itemId?: number;
   quantity: number;
   unit: string;
+}
+
+export interface AulaInventoryItem {
+  ingredientId: number;
+  itemId: number;
+  name: string;
+  category: string;
+  requiredQuantity: number;
+  requiredUnit: string;
+  availableQuantity: number;
+  stockUnit: string;
+  minStock?: number;
+  expiryDate?: string;
+  batchNumber?: string | null;
+  stockStatus?: ApiStockStatus;
+  itemInInventory?: boolean;
 }
 
 export interface ApiAula {
@@ -67,6 +101,8 @@ export interface ApiAula {
   kitchen: string;
   dayOfWeek: string;
   time: string;
+  status?: ApiAulaStatus;
+  inventoryItems?: AulaInventoryItem[];
   aulaIngredients?: ApiAulaIngredient[];
 }
 

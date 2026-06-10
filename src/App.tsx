@@ -1,7 +1,9 @@
 import { useEffect, useRef } from "react";
-import { BrowserRouter, useLocation } from "react-router-dom";
+import { BrowserRouter, Navigate, useLocation } from "react-router-dom";
 import { Header } from "./components/Header";
 import { TabBar } from "./components/TabBar";
+import { canAccessRoute, getHomeRoute } from "./config/permissions";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { ToastProvider } from "./contexts/ToastContext";
 import { AppRoutes } from "./routes/app.routes";
 
@@ -17,17 +19,30 @@ function isFullScreenRoute(pathname: string): boolean {
 function AppShell() {
   const { pathname } = useLocation();
   const mainRef = useRef<HTMLElement>(null);
+  const { user, isAuthenticated } = useAuth();
 
   useEffect(() => {
     mainRef.current?.scrollTo({ top: 0, left: 0, behavior: "instant" });
   }, [pathname]);
 
   if (isFullScreenRoute(pathname)) {
+    if (isAuthenticated && user) {
+      return <Navigate to={getHomeRoute(user.role)} replace />;
+    }
+
     return (
       <div className="min-h-screen bg-neutral-50">
         <AppRoutes />
       </div>
     );
+  }
+
+  if (!isAuthenticated || !user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (!canAccessRoute(user.role, pathname)) {
+    return <Navigate to={getHomeRoute(user.role)} replace />;
   }
 
   return (
@@ -45,11 +60,13 @@ function AppShell() {
 
 function App() {
   return (
-    <ToastProvider>
-      <BrowserRouter>
-        <AppShell />
-      </BrowserRouter>
-    </ToastProvider>
+    <AuthProvider>
+      <ToastProvider>
+        <BrowserRouter>
+          <AppShell />
+        </BrowserRouter>
+      </ToastProvider>
+    </AuthProvider>
   );
 }
 

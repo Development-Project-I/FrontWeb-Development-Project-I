@@ -1,7 +1,6 @@
 import clsx from "clsx";
 import type { FormEvent } from "react";
 import { useCallback, useEffect, useId, useMemo, useState } from "react";
-// TODO: restaurar busca por professor quando GET /users retornar lista real
 import { KITCHENS, type Kitchen } from "../../../constants/kitchens";
 import {
   isLessonSlotTaken,
@@ -49,16 +48,23 @@ export function CreateLessonModal({
   const [kitchen, setKitchen] = useState<Kitchen>(KITCHENS[0]);
   const [day, setDay] = useState<WeekDayKey>("segunda");
   const [startTime, setStartTime] = useState<LessonTimeSlot>("08:00");
+  const [instructorId, setInstructorId] = useState("");
   const [instructorName, setInstructorName] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const selectedTeacher = useMemo(
-    () => {
-      const term = instructorName.trim().toLowerCase();
-      if (!term) return undefined;
-      return teachers.find((teacher) => teacher.name.toLowerCase() === term);
-    },
-    [teachers, instructorName],
-  );
+  const useTeacherSelect = teachers.length > 0;
+
+  const selectedTeacher = useMemo(() => {
+    if (useTeacherSelect) {
+      return teachers.find(
+        (teacher) => String(teacher.id) === String(instructorId),
+      );
+    }
+
+    const term = instructorName.trim().toLowerCase();
+    if (!term) return undefined;
+    return teachers.find((teacher) => teacher.name.toLowerCase() === term);
+  }, [teachers, instructorId, instructorName, useTeacherSelect]);
 
   const slotTaken = useMemo(
     () => isLessonSlotTaken(existingLessons, day, startTime),
@@ -70,6 +76,7 @@ export function CreateLessonModal({
     setKitchen(KITCHENS[0]);
     setDay("segunda");
     setStartTime("08:00");
+    setInstructorId("");
     setInstructorName("");
   }, []);
 
@@ -97,21 +104,34 @@ export function CreateLessonModal({
 
   if (!isOpen) return null;
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    const trimmedInstructor = instructorName.trim();
+    const teacher = useTeacherSelect
+      ? teachers.find((item) => String(item.id) === String(instructorId))
+      : selectedTeacher;
+    const trimmedInstructor = teacher?.name ?? instructorName.trim();
+
     if (!title.trim() || !trimmedInstructor || slotTaken) return;
 
-    onCreate?.({
-      title: title.trim(),
-      instructorId: selectedTeacher?.id ?? trimmedInstructor,
-      instructor: trimmedInstructor,
-      location: kitchen,
-      day,
-      startTime,
-    });
-    onClose();
+    setIsSubmitting(true);
+    try {
+      await onCreate?.({
+        title: title.trim(),
+        instructorId: teacher ? String(teacher.id) : trimmedInstructor,
+        instructor: trimmedInstructor,
+        location: kitchen,
+        day,
+        startTime,
+      });
+      onClose();
+    } finally {
+      setIsSubmitting(false);
+    }
   }
+
+  const hasInstructor = useTeacherSelect
+    ? Boolean(instructorId)
+    : Boolean(instructorName.trim());
 
   return (
     <div
@@ -198,20 +218,38 @@ export function CreateLessonModal({
               >
                 Professor <span className="text-primary">*</span>
               </label>
-              <input
-                id={`${baseId}-teacher`}
-                type="text"
-                required
-                value={instructorName}
-                onChange={(e) => setInstructorName(e.target.value)}
-                placeholder="Ex.: Chef Pedro Silva"
-                className={clsx(inputClass, "px-3")}
-                autoComplete="off"
-              />
-              <p className="preset-body_12/16 mt-1.5 text-neutral-500">
-                Digite o nome do professor. A seleção automática da lista de
-                usuários será habilitada quando a API retornar os cadastros.
-              </p>
+              {useTeacherSelect ? (
+                <select
+                  id={`${baseId}-teacher`}
+                  required
+                  value={instructorId}
+                  onChange={(e) => setInstructorId(e.target.value)}
+                  className={selectClass}
+                >
+                  <option value="">Selecione um professor</option>
+                  {teachers.map((teacher) => (
+                    <option key={teacher.id} value={teacher.id}>
+                      {teacher.name}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <>
+                  <input
+                    id={`${baseId}-teacher`}
+                    type="text"
+                    required
+                    value={instructorName}
+                    onChange={(e) => setInstructorName(e.target.value)}
+                    placeholder="Ex.: Chef Pedro Silva"
+                    className={clsx(inputClass, "px-3")}
+                    autoComplete="off"
+                  />
+                  <p className="preset-body_12/16 mt-1.5 text-neutral-500">
+                    Nenhum professor cadastrado. Digite o nome manualmente.
+                  </p>
+                </>
+              )}
             </div>
 
             <div>
@@ -298,11 +336,13 @@ export function CreateLessonModal({
             </button>
             <Button
               type="submit"
-              title="Criar Aula"
+              title={isSubmitting ? "Criando..." : "Criar Aula"}
               icon="Plus"
               color="bg-primary text-white hover:brightness-110 active:brightness-95"
               className="w-full sm:w-auto"
-              disabled={!title.trim() || !instructorName.trim() || slotTaken}
+              disabled={
+                !title.trim() || !hasInstructor || slotTaken || isSubmitting
+              }
             />
           </footer>
         </form>

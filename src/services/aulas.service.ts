@@ -88,4 +88,15 @@ export const aulasService = {
       throw new Error(getApiErrorMessage(error, "Erro ao remover ingrediente."));
     }
   },
+
+  async cancelAula(
+    id: number | string,
+  ): Promise<{ status: number; data: ApiAula }> {
+    try {
+      const response = await apiAulas().patch<ApiAula>(`/aulas/${id}/cancel`);
+      return { status: response.status, data: response.data };
+    } catch (error) {
+      throw new Error(getApiErrorMessage(error, "Erro ao cancelar aula."));
+    }
+  },
 };
