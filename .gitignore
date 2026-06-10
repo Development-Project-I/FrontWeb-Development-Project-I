@@ -25,3 +25,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Documentação interna / collection da API (não versionar)
+BACKEND_PENDENCIAS.md
+gastroplanCollection.json

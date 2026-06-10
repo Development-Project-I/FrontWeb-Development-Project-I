@@ -5,7 +5,40 @@ import { Icon } from "../../Icon";
 export interface LessonIngredientDetailCardProps {
   ingredient: LessonIngredientDetail;
   onRemove?: (ingredientId: string) => void;
+  isRemoving?: boolean;
+  isLoading?: boolean;
   className?: string;
+}
+
+export function LessonIngredientDetailCardSkeleton({
+  className,
+}: {
+  className?: string;
+}) {
+  return (
+    <article
+      className={clsx(
+        "overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm",
+        className,
+      )}
+      role="status"
+      aria-label="Carregando ingrediente"
+    >
+      <div className="select-none p-4 blur-md">
+        <div className="flex items-start gap-3">
+          <div className="mt-0.5 size-5 shrink-0 rounded-full bg-neutral-300/70" />
+          <div className="min-w-0 flex-1">
+            <div className="h-5 w-36 rounded-md bg-neutral-300/70" />
+            <div className="mt-2 h-4 w-24 rounded-md bg-neutral-200/80" />
+            <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1">
+              <div className="h-4 w-32 rounded-md bg-neutral-200/80" />
+              <div className="h-4 w-32 rounded-md bg-neutral-200/80" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+  );
 }
 
 const badgeStyles = {
@@ -40,6 +73,8 @@ const alertStyles = {
 export function LessonIngredientDetailCard({
   ingredient,
   onRemove,
+  isRemoving = false,
+  isLoading = false,
   className,
 }: LessonIngredientDetailCardProps) {
   const { status } = ingredient;
@@ -77,67 +112,86 @@ export function LessonIngredientDetailCard({
         className,
       )}
     >
-      <div className="flex items-start gap-3 p-4">
-        <Icon
-          name={iconName}
-          className={clsx("mt-0.5 size-5 shrink-0", iconClass)}
-          strokeWidth={2}
-          aria-hidden
-        />
-        <div className="min-w-0 flex-1">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="preset-body_16/24 font-bold text-neutral-900">
-                {ingredient.name}
-              </p>
-              <p className="preset-body_14/20 text-neutral-500">{ingredient.category}</p>
-            </div>
-            <div className="flex shrink-0 items-center gap-1">
-              <span
-                className={clsx(
-                  "preset-tag_12/16 rounded-md px-2.5 py-1 font-semibold",
-                  badgeStyles[status],
-                )}
-              >
-                {badgeLabels[status]}
-              </span>
-              {onRemove ? (
-                <button
-                  type="button"
-                  onClick={() => onRemove(ingredient.id)}
-                  className="rounded-md p-2 text-neutral-400 transition-colors hover:bg-red-50 hover:text-red-600"
-                  aria-label={`Remover ${ingredient.name} da aula`}
+      <div
+        className={clsx(
+          "transition-[filter]",
+          isLoading && "pointer-events-none select-none blur-md",
+        )}
+        aria-busy={isLoading}
+      >
+        <div className="flex items-start gap-3 p-4">
+          <Icon
+            name={iconName}
+            className={clsx("mt-0.5 size-5 shrink-0", iconClass)}
+            strokeWidth={2}
+            aria-hidden
+          />
+          <div className="min-w-0 flex-1">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="preset-body_16/24 font-bold text-neutral-900">
+                  {ingredient.name}
+                </p>
+                <p className="preset-body_14/20 text-neutral-500">
+                  {ingredient.category}
+                </p>
+              </div>
+              <div className="flex shrink-0 items-center gap-1">
+                <span
+                  className={clsx(
+                    "preset-tag_12/16 rounded-md px-2.5 py-1 font-semibold",
+                    badgeStyles[status],
+                  )}
                 >
-                  <Icon name="Trash2" className="size-4" strokeWidth={2} aria-hidden />
-                </button>
-              ) : null}
+                  {badgeLabels[status]}
+                </span>
+                {onRemove ? (
+                  <button
+                    type="button"
+                    onClick={() => onRemove(ingredient.id)}
+                    disabled={isRemoving || isLoading}
+                    className="rounded-md p-2 text-neutral-400 transition-colors hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
+                    aria-label={`Remover ${ingredient.name} da aula`}
+                  >
+                    <Icon
+                      name={isRemoving ? "Loader2" : "Trash2"}
+                      className={clsx(
+                        "size-4",
+                        isRemoving && "animate-spin text-red-500",
+                      )}
+                      strokeWidth={2}
+                      aria-hidden
+                    />
+                  </button>
+                ) : null}
+              </div>
+            </div>
+            <div className="preset-body_14/20 mt-3 flex flex-wrap gap-x-6 gap-y-1 text-neutral-600">
+              <span>
+                Necessário:{" "}
+                <strong className="text-neutral-900">
+                  {ingredient.required} {ingredient.requiredUnit}
+                </strong>
+              </span>
+              <span>
+                Disponível:{" "}
+                <strong className={clsx(disponivelStyles[status])}>
+                  {ingredient.available} {ingredient.stockUnit}
+                </strong>
+              </span>
             </div>
           </div>
-          <div className="preset-body_14/20 mt-3 flex flex-wrap gap-x-6 gap-y-1 text-neutral-600">
-            <span>
-              Necessário:{" "}
-              <strong className="text-neutral-900">
-                {ingredient.required} {ingredient.requiredUnit}
-              </strong>
-            </span>
-            <span>
-              Disponível:{" "}
-              <strong className={clsx(disponivelStyles[status])}>
-                {ingredient.available} {ingredient.stockUnit}
-              </strong>
-            </span>
-          </div>
         </div>
-      </div>
 
-      {status !== "OK" ? (
-        <div className={clsx("border-t px-4 py-3", alertStyles[status])}>
-          <p className="preset-body_14/20 font-medium">
-            <span aria-hidden>⚠️ </span>
-            {alertMessage}
-          </p>
-        </div>
-      ) : null}
+        {status !== "OK" ? (
+          <div className={clsx("border-t px-4 py-3", alertStyles[status])}>
+            <p className="preset-body_14/20 font-medium">
+              <span aria-hidden>⚠️ </span>
+              {alertMessage}
+            </p>
+          </div>
+        ) : null}
+      </div>
     </article>
   );
 }

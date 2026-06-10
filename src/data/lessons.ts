@@ -8,6 +8,7 @@ export type WeekDayKey = "segunda" | "terca" | "quarta" | "quinta" | "sexta";
 export interface ScheduledLesson extends ClassSlotData {
   day: WeekDayKey;
   startTime: string;
+  hasNoIngredients?: boolean;
 }
 
 export type LessonIngredientStatus = "OK" | "Baixo" | "SemEstoque";
@@ -58,10 +59,61 @@ export const LESSON_TIME_SLOTS = [
 
 export type LessonTimeSlot = (typeof LESSON_TIME_SLOTS)[number];
 
-export function isLessonSlotTaken(day: WeekDayKey, startTime: string): boolean {
-  return scheduledLessons.some(
+export function isLessonSlotTaken(
+  lessons: Pick<ScheduledLesson, "day" | "startTime">[],
+  day: WeekDayKey,
+  startTime: string,
+): boolean {
+  return lessons.some(
     (lesson) => lesson.day === day && lesson.startTime === startTime,
   );
+}
+
+const DAY_ORDER: Record<WeekDayKey, number> = {
+  segunda: 1,
+  terca: 2,
+  quarta: 3,
+  quinta: 4,
+  sexta: 5,
+};
+
+const JS_DAY_TO_WEEK: Partial<Record<number, WeekDayKey>> = {
+  1: "segunda",
+  2: "terca",
+  3: "quarta",
+  4: "quinta",
+  5: "sexta",
+};
+
+function lessonSortKey(lesson: Pick<ScheduledLesson, "day" | "startTime">): number {
+  const [hours, minutes] = lesson.startTime.split(":").map(Number);
+  return DAY_ORDER[lesson.day] * 10_000 + (hours ?? 0) * 60 + (minutes ?? 0);
+}
+
+export function findNextScheduledLesson<T extends ScheduledLesson>(
+  lessons: T[],
+): T | undefined {
+  if (lessons.length === 0) return undefined;
+
+  const sorted = [...lessons].sort(
+    (a, b) => lessonSortKey(a) - lessonSortKey(b),
+  );
+
+  const today = JS_DAY_TO_WEEK[new Date().getDay()];
+  if (!today) return sorted[0];
+
+  const nowMinutes = new Date().getHours() * 60 + new Date().getMinutes();
+
+  const upcoming = sorted.find((lesson) => {
+    const dayDiff = DAY_ORDER[lesson.day] - DAY_ORDER[today];
+    if (dayDiff > 0) return true;
+    if (dayDiff < 0) return false;
+
+    const [hours, minutes] = lesson.startTime.split(":").map(Number);
+    return (hours ?? 0) * 60 + (minutes ?? 0) > nowMinutes;
+  });
+
+  return upcoming ?? sorted[0];
 }
 
 function endTime(start: string): string {
@@ -268,7 +320,7 @@ export interface CreateScheduledLessonInput {
 export function addScheduledLesson(
   input: CreateScheduledLessonInput,
 ): ScheduledLesson | null {
-  if (isLessonSlotTaken(input.day, input.startTime)) {
+  if (isLessonSlotTaken(scheduledLessons, input.day, input.startTime)) {
     return null;
   }
 

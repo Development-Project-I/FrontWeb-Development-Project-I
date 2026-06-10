@@ -13,8 +13,9 @@ export interface CreateUserModalProps {
     firstName: string;
     lastName: string;
     email: string;
+    password: string;
     accessType: AccessType;
-  }) => void;
+  }) => void | Promise<void>;
 }
 
 const accessOptions: {
@@ -60,12 +61,15 @@ export function CreateUserModal({ isOpen, onClose, onAdd }: CreateUserModalProps
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [accessType, setAccessType] = useState<AccessType | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const reset = useCallback(() => {
     setFirstName("");
     setLastName("");
     setEmail("");
+    setPassword("");
     setAccessType(null);
   }, []);
 
@@ -102,16 +106,23 @@ export function CreateUserModal({ isOpen, onClose, onAdd }: CreateUserModalProps
 
   const emailDisplay = email.trim() || "—";
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    if (accessType == null) return;
-    onAdd?.({
-      firstName: firstName.trim(),
-      lastName: lastName.trim(),
-      email: email.trim(),
-      accessType,
-    });
-    onClose();
+    if (accessType == null || !password.trim()) return;
+
+    setIsSubmitting(true);
+    try {
+      await onAdd?.({
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        email: email.trim(),
+        password: password.trim(),
+        accessType,
+      });
+      onClose();
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -247,6 +258,33 @@ export function CreateUserModal({ isOpen, onClose, onAdd }: CreateUserModalProps
             </div>
 
             <div>
+              <label
+                htmlFor={`${baseId}-senha`}
+                className="preset-body_14/20 mb-1.5 block font-medium text-neutral-800"
+              >
+                Senha <span className="text-primary">*</span>
+              </label>
+              <div className="relative">
+                <Icon
+                  name="Lock"
+                  className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-neutral-400"
+                  strokeWidth={2}
+                  aria-hidden
+                />
+                <input
+                  id={`${baseId}-senha`}
+                  type="password"
+                  required
+                  minLength={6}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Senha de acesso"
+                  className="w-full rounded-lg border border-neutral-200 py-2.5 pl-10 pr-3 text-sm text-neutral-900 outline-none ring-primary/30 placeholder:text-neutral-400 focus:border-primary focus:ring-2"
+                />
+              </div>
+            </div>
+
+            <div>
               <p className="preset-body_14/20 mb-3 font-medium text-neutral-800">
                 Tipo de Acesso <span className="text-primary">*</span>
               </p>
@@ -321,11 +359,11 @@ export function CreateUserModal({ isOpen, onClose, onAdd }: CreateUserModalProps
             </button>
             <Button
               type="submit"
-              title="Adicionar Usuário"
+              title={isSubmitting ? "Salvando..." : "Adicionar Usuário"}
               icon="UserPlus"
               color="bg-primary text-white hover:brightness-110 active:brightness-95"
               className="w-full sm:w-auto"
-              disabled={accessType == null}
+              disabled={accessType == null || isSubmitting}
             />
           </footer>
         </form>

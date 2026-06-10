@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import type { FormEvent } from "react";
 import { useCallback, useEffect, useId, useMemo, useState } from "react";
+// TODO: restaurar busca por professor quando GET /users retornar lista real
 import { KITCHENS, type Kitchen } from "../../../constants/kitchens";
 import {
   isLessonSlotTaken,
@@ -26,7 +27,8 @@ export interface CreateLessonModalProps {
   isOpen: boolean;
   onClose: () => void;
   teachers: Teacher[];
-  onCreate?: (payload: CreateLessonPayload) => void;
+  existingLessons?: { day: WeekDayKey; startTime: string }[];
+  onCreate?: (payload: CreateLessonPayload) => void | Promise<void>;
 }
 
 const selectClass =
@@ -35,14 +37,11 @@ const selectClass =
 const inputClass =
   "w-full rounded-lg border border-neutral-200 py-2.5 text-sm text-neutral-900 outline-none ring-primary/30 placeholder:text-neutral-400 focus:border-primary focus:ring-2";
 
-function normalizeTerm(value: string) {
-  return value.trim().toLowerCase();
-}
-
 export function CreateLessonModal({
   isOpen,
   onClose,
   teachers,
+  existingLessons = [],
   onCreate,
 }: CreateLessonModalProps) {
   const baseId = useId();
@@ -50,30 +49,20 @@ export function CreateLessonModal({
   const [kitchen, setKitchen] = useState<Kitchen>(KITCHENS[0]);
   const [day, setDay] = useState<WeekDayKey>("segunda");
   const [startTime, setStartTime] = useState<LessonTimeSlot>("08:00");
-  const [teacherId, setTeacherId] = useState("");
-  const [teacherQuery, setTeacherQuery] = useState("");
-  const [appliedTeacherQuery, setAppliedTeacherQuery] = useState("");
-  const [hasSearched, setHasSearched] = useState(false);
-
-  const filteredTeachers = useMemo(() => {
-    if (!hasSearched) return [];
-    const term = normalizeTerm(appliedTeacherQuery);
-    if (!term) return [];
-    return teachers.filter(
-      (teacher) =>
-        teacher.name.toLowerCase().includes(term) ||
-        teacher.specialties.some((s) => s.toLowerCase().includes(term)),
-    );
-  }, [teachers, appliedTeacherQuery, hasSearched]);
+  const [instructorName, setInstructorName] = useState("");
 
   const selectedTeacher = useMemo(
-    () => teachers.find((teacher) => teacher.id === teacherId),
-    [teachers, teacherId],
+    () => {
+      const term = instructorName.trim().toLowerCase();
+      if (!term) return undefined;
+      return teachers.find((teacher) => teacher.name.toLowerCase() === term);
+    },
+    [teachers, instructorName],
   );
 
   const slotTaken = useMemo(
-    () => isLessonSlotTaken(day, startTime),
-    [day, startTime],
+    () => isLessonSlotTaken(existingLessons, day, startTime),
+    [existingLessons, day, startTime],
   );
 
   const reset = useCallback(() => {
@@ -81,20 +70,8 @@ export function CreateLessonModal({
     setKitchen(KITCHENS[0]);
     setDay("segunda");
     setStartTime("08:00");
-    setTeacherId("");
-    setTeacherQuery("");
-    setAppliedTeacherQuery("");
-    setHasSearched(false);
+    setInstructorName("");
   }, []);
-
-  function handleTeacherSearch() {
-    setAppliedTeacherQuery(teacherQuery);
-    setHasSearched(true);
-  }
-
-  function selectTeacher(teacher: Teacher) {
-    setTeacherId(teacher.id);
-  }
 
   useEffect(() => {
     if (!isOpen) reset();
@@ -122,11 +99,13 @@ export function CreateLessonModal({
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    if (!title.trim() || !teacherId || !selectedTeacher || slotTaken) return;
+    const trimmedInstructor = instructorName.trim();
+    if (!title.trim() || !trimmedInstructor || slotTaken) return;
+
     onCreate?.({
       title: title.trim(),
-      instructorId: teacherId,
-      instructor: selectedTeacher.name,
+      instructorId: selectedTeacher?.id ?? trimmedInstructor,
+      instructor: trimmedInstructor,
       location: kitchen,
       day,
       startTime,
@@ -219,85 +198,20 @@ export function CreateLessonModal({
               >
                 Professor <span className="text-primary">*</span>
               </label>
-              <div className="flex gap-2">
-                <input
-                  id={`${baseId}-teacher`}
-                  type="text"
-                  value={teacherQuery}
-                  onChange={(e) => setTeacherQuery(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      handleTeacherSearch();
-                    }
-                  }}
-                  placeholder="Nome do professor..."
-                  className={clsx(inputClass, "min-w-0 flex-1 px-3")}
-                  autoComplete="off"
-                />
-                <button
-                  type="button"
-                  onClick={handleTeacherSearch}
-                  className="shrink-0 rounded-lg border border-neutral-200 bg-white px-3 py-2.5 text-sm font-medium text-neutral-700 transition hover:bg-neutral-50"
-                >
-                  Buscar
-                </button>
-              </div>
-
-              <ul
-                className="mt-2 max-h-40 overflow-y-auto rounded-lg border border-neutral-200"
-                role="listbox"
-                aria-label="Professores"
-              >
-                {!hasSearched ? (
-                  <li className="preset-body_14/20 px-3 py-3 text-neutral-500">
-                    Digite o nome e clique em Buscar.
-                  </li>
-                ) : !normalizeTerm(appliedTeacherQuery) ? (
-                  <li className="preset-body_14/20 px-3 py-3 text-neutral-500">
-                    Informe o nome do professor para buscar.
-                  </li>
-                ) : filteredTeachers.length === 0 ? (
-                  <li className="preset-body_14/20 px-3 py-3 text-neutral-500">
-                    Nenhum professor encontrado para &quot;{appliedTeacherQuery.trim()}
-                    &quot;.
-                  </li>
-                ) : (
-                  filteredTeachers.map((teacher) => {
-                    const isSelected = teacher.id === teacherId;
-                    return (
-                      <li key={teacher.id} role="presentation">
-                        <button
-                          type="button"
-                          role="option"
-                          aria-selected={isSelected}
-                          onClick={() => selectTeacher(teacher)}
-                          className={clsx(
-                            "flex w-full items-center px-3 py-2.5 text-left text-sm transition-colors",
-                            isSelected
-                              ? "bg-blue-50 font-medium text-primary"
-                              : "font-medium text-neutral-800 hover:bg-neutral-50",
-                          )}
-                        >
-                          {teacher.name}
-                        </button>
-                      </li>
-                    );
-                  })
-                )}
-              </ul>
-              {selectedTeacher ? (
-                <p className="preset-body_12/16 mt-1.5 text-neutral-500">
-                  Selecionado:{" "}
-                  <span className="font-semibold text-neutral-800">
-                    {selectedTeacher.name}
-                  </span>
-                </p>
-              ) : (
-                <p className="preset-body_12/16 mt-1.5 text-amber-700">
-                  Selecione um professor na lista acima.
-                </p>
-              )}
+              <input
+                id={`${baseId}-teacher`}
+                type="text"
+                required
+                value={instructorName}
+                onChange={(e) => setInstructorName(e.target.value)}
+                placeholder="Ex.: Chef Pedro Silva"
+                className={clsx(inputClass, "px-3")}
+                autoComplete="off"
+              />
+              <p className="preset-body_12/16 mt-1.5 text-neutral-500">
+                Digite o nome do professor. A seleção automática da lista de
+                usuários será habilitada quando a API retornar os cadastros.
+              </p>
             </div>
 
             <div>
@@ -388,7 +302,7 @@ export function CreateLessonModal({
               icon="Plus"
               color="bg-primary text-white hover:brightness-110 active:brightness-95"
               className="w-full sm:w-auto"
-              disabled={!title.trim() || !teacherId || slotTaken}
+              disabled={!title.trim() || !instructorName.trim() || slotTaken}
             />
           </footer>
         </form>

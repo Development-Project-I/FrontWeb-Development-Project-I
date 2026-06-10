@@ -10,6 +10,7 @@ import {
 import type { StockProductRow } from "../../Cards/StockTable";
 import { resolveMinStock } from "../../../utils/stockRow";
 import { Button } from "../../Button";
+import { ConfirmDropdown } from "../../ConfirmDropdown";
 import { Icon } from "../../Icon";
 
 export interface EditStockItemPayload {
@@ -24,6 +25,7 @@ export interface EditStockItemModalProps {
   product: StockProductRow | null;
   onClose: () => void;
   onSave?: (productId: string, payload: EditStockItemPayload) => void;
+  onDelete?: (productId: string) => void | Promise<void>;
 }
 
 const inputClass =
@@ -78,12 +80,15 @@ export function EditStockItemModal({
   product,
   onClose,
   onSave,
+  onDelete,
 }: EditStockItemModalProps) {
   const baseId = useId();
   const [name, setName] = useState("");
   const [category, setCategory] = useState<StockCategory>(STOCK_CATEGORIES[0]);
   const [unit, setUnit] = useState<StockUnit>("kg");
   const [minStock, setMinStock] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
 
   const syncFromProduct = useCallback(() => {
     if (!product) return;
@@ -95,6 +100,7 @@ export function EditStockItemModal({
 
   useEffect(() => {
     if (isOpen && product) syncFromProduct();
+    if (!isOpen) setDeleteConfirmOpen(false);
   }, [isOpen, product, syncFromProduct]);
 
   useEffect(() => {
@@ -127,6 +133,19 @@ export function EditStockItemModal({
       minStock: Number(minStock) || 0,
     });
     onClose();
+  }
+
+  async function handleDelete() {
+    if (!product || !onDelete) return;
+
+    setIsDeleting(true);
+    try {
+      await onDelete(product.id);
+      setDeleteConfirmOpen(false);
+      onClose();
+    } finally {
+      setIsDeleting(false);
+    }
   }
 
   return (
@@ -329,21 +348,52 @@ export function EditStockItemModal({
             <StockStatusInfoBox />
           </div>
 
-          <footer className="flex shrink-0 flex-col-reverse gap-3 bg-white px-6 pb-5 pt-4 sm:flex-row sm:justify-between">
+          <footer className="flex shrink-0 flex-col-reverse gap-3 bg-white px-6 pb-5 pt-4 sm:flex-row sm:items-center sm:justify-between">
             <button
               type="button"
               onClick={onClose}
-              className="preset-button_16/24 w-full rounded-lg border border-neutral-200 bg-white px-4 py-2.5 font-semibold text-neutral-700 shadow-sm transition hover:bg-neutral-50 sm:w-auto"
+              disabled={isDeleting}
+              className="preset-button_16/24 w-full rounded-lg border border-neutral-200 bg-white px-4 py-2.5 font-semibold text-neutral-700 shadow-sm transition hover:bg-neutral-50 disabled:opacity-50 sm:w-auto"
             >
               Cancelar
             </button>
-            <Button
-              type="submit"
-              title="Salvar Alterações"
-              icon="Save"
-              color="bg-primary text-white hover:brightness-110 active:brightness-95"
-              className="w-full sm:w-auto"
-            />
+            <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center">
+              {onDelete ? (
+                <div className="relative w-full sm:w-auto">
+                  <button
+                    type="button"
+                    onClick={() => setDeleteConfirmOpen(true)}
+                    disabled={isDeleting}
+                    className="preset-button_16/24 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-red-200 bg-white px-4 py-2.5 font-semibold text-red-600 shadow-sm transition hover:bg-red-50 disabled:opacity-50 sm:w-auto"
+                    aria-label={`Excluir ${product.name}`}
+                  >
+                    <Icon
+                      name="Trash2"
+                      className="size-4 shrink-0"
+                      strokeWidth={2}
+                      aria-hidden
+                    />
+                    {isDeleting ? "Excluindo..." : "Excluir"}
+                  </button>
+                  <ConfirmDropdown
+                    isOpen={deleteConfirmOpen}
+                    onClose={() => setDeleteConfirmOpen(false)}
+                    onConfirm={() => void handleDelete()}
+                    message={`Deseja excluir "${product.name}" do estoque? Esta ação não pode ser desfeita.`}
+                    isLoading={isDeleting}
+                    className="!bottom-full !top-auto !mb-2 !mt-0 origin-bottom-right"
+                  />
+                </div>
+              ) : null}
+              <Button
+                type="submit"
+                title="Salvar Alterações"
+                icon="Save"
+                color="bg-primary text-white hover:brightness-110 active:brightness-95"
+                className="w-full sm:w-auto"
+                disabled={isDeleting}
+              />
+            </div>
           </footer>
         </form>
       </div>

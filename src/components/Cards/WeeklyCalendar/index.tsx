@@ -1,8 +1,5 @@
 import clsx from "clsx";
 import {
-  getAllLessons,
-  getLessonCalendarAccent,
-  lessonHasNoIngredients,
   LESSON_TIME_SLOTS,
   LESSON_WEEK_DAYS,
   type ScheduledLesson,
@@ -45,7 +42,7 @@ function lessonAt(
 }
 
 export function WeeklyCalendar({
-  lessons = getAllLessons(),
+  lessons = [],
   onLessonClick,
   className,
 }: WeeklyCalendarProps) {
@@ -92,11 +89,8 @@ export function WeeklyCalendar({
                     <td key={`${time}-${key}`} className={dayCellClass}>
                       {slot ? (
                         <ClassSlotCard
-                          lesson={{
-                            ...slot,
-                            accent: getLessonCalendarAccent(slot.id),
-                          }}
-                          showNoIngredients={lessonHasNoIngredients(slot.id)}
+                          lesson={slot}
+                          showNoIngredients={slot.hasNoIngredients}
                           className="w-full"
                           onClick={
                             onLessonClick

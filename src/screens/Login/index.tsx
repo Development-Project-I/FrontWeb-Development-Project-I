@@ -4,27 +4,33 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "../../components/Button";
 import { Icon } from "../../components/Icon";
 import { Text } from "../../components/Text";
-
-const MOCK_EMAIL = "admin@gastroplan.com";
-const MOCK_PASSWORD = "admin123";
+import { authService } from "../../services/auth.service";
 
 export function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
+    setIsSubmitting(true);
 
-    const normalized = email.trim().toLowerCase();
-    if (normalized === MOCK_EMAIL.toLowerCase() && password === MOCK_PASSWORD) {
+    try {
+      await authService.postLogin({
+        identificador: email.trim(),
+        password,
+      });
       navigate("/dashboard", { replace: true });
-      return;
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "E-mail ou senha incorretos.";
+      setError(message);
+    } finally {
+      setIsSubmitting(false);
     }
-
-    setError("E-mail ou senha incorretos.");
   }
 
   return (
@@ -110,10 +116,11 @@ export function Login() {
 
             <Button
               type="submit"
-              title="Entrar"
+              title={isSubmitting ? "Entrando..." : "Entrar"}
               icon="LogIn"
               color="bg-gradient-to-r from-blue-600 to-violet-600 text-white shadow-md hover:brightness-110 active:brightness-95"
               className="w-full py-3"
+              disabled={isSubmitting}
             />
           </form>
         </div>

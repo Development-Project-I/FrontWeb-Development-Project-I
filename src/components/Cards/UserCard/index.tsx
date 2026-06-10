@@ -23,6 +23,7 @@ export interface UserCardProps {
   label: string;
   value: string | number;
   accent?: UserCardAccent;
+  isLoading?: boolean;
   className?: string;
 }
 
@@ -31,6 +32,7 @@ export function UserCard({
   label,
   value,
   accent = "blue",
+  isLoading = false,
   className,
 }: UserCardProps) {
   const tone = accents[accent];
@@ -58,7 +60,15 @@ export function UserCard({
       </div>
       <div className="flex min-w-0 flex-col gap-0.5">
         <p className="preset-body_14/20 font-regular text-neutral-500">{label}</p>
-        <p className="preset-headline_20/25 font-bold text-neutral-900">{value}</p>
+        <p
+          className={clsx(
+            "preset-headline_20/25 font-bold text-neutral-900 transition-[filter]",
+            isLoading && "select-none blur-md",
+          )}
+          aria-busy={isLoading}
+        >
+          {value}
+        </p>
       </div>
     </article>
   );

@@ -7,6 +7,8 @@ import {
   type StockCategory,
   type StockUnit,
 } from "../../../constants/inventory";
+import { useToast } from "../../../contexts/ToastContext";
+import { inventoryService } from "../../../services/inventory.service";
 import { Button } from "../../Button";
 import { Icon } from "../../Icon";
 
@@ -23,7 +25,7 @@ export interface AddStockItemPayload {
 export interface AddStockItemModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAdd?: (payload: AddStockItemPayload) => void;
+  onSuccess?: () => void;
 }
 
 const inputClass =
@@ -35,9 +37,11 @@ const selectClass =
 export function AddStockItemModal({
   isOpen,
   onClose,
-  onAdd,
+  onSuccess,
 }: AddStockItemModalProps) {
+  const { showToast } = useToast();
   const baseId = useId();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [name, setName] = useState("");
   const [category, setCategory] = useState<StockCategory>(STOCK_CATEGORIES[0]);
   const [unit, setUnit] = useState<StockUnit>("kg");
@@ -78,21 +82,97 @@ export function AddStockItemModal({
     };
   }, [isOpen]);
 
-  if (!isOpen) return null;
+  const handleSubmit = useCallback(
+    async (e: FormEvent) => {
+      e.preventDefault();
 
-  function handleSubmit(e: FormEvent) {
-    e.preventDefault();
-    onAdd?.({
-      name: name.trim(),
+      const trimmedName = name.trim();
+      const qty = Number(quantity);
+
+      if (!trimmedName) {
+        showToast("Campos obrigatórios", "Informe o nome do item.", "warning");
+        return;
+      }
+
+      if (!category) {
+        showToast("Campos obrigatórios", "Selecione uma categoria.", "warning");
+        return;
+      }
+
+      if (!expirationDate) {
+        showToast(
+          "Campos obrigatórios",
+          "Informe a data de validade.",
+          "warning",
+        );
+        return;
+      }
+
+      const min = Number(minStock);
+
+      if (Number.isNaN(qty) || qty < 0) {
+        showToast(
+          "Campos obrigatórios",
+          "Informe uma quantidade válida.",
+          "warning",
+        );
+        return;
+      }
+
+      if (Number.isNaN(min) || min < 0) {
+        showToast(
+          "Campos obrigatórios",
+          "Informe o estoque mínimo.",
+          "warning",
+        );
+        return;
+      }
+
+      setIsSubmitting(true);
+
+      try {
+        await inventoryService.postInventory({
+          name: trimmedName,
+          category,
+          quantity: qty,
+          expiryDate: expirationDate,
+          unit,
+          minStock: min,
+          batchNumber: batch.trim() || undefined,
+        });
+
+        showToast(
+          "Item adicionado",
+          `${trimmedName} foi cadastrado no estoque.`,
+          "success",
+        );
+        onSuccess?.();
+        onClose();
+      } catch (error) {
+        const message =
+          error instanceof Error
+            ? error.message
+            : "Não foi possível cadastrar o item no estoque.";
+        showToast("Erro ao cadastrar", message, "error");
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+    [
+      batch,
       category,
-      unit,
-      quantity: Number(quantity) || 0,
-      minStock: Number(minStock) || 0,
       expirationDate,
-      batch: batch.trim(),
-    });
-    onClose();
-  }
+      minStock,
+      name,
+      onSuccess,
+      onClose,
+      quantity,
+      showToast,
+      unit,
+    ],
+  );
+
+  if (!isOpen) return null;
 
   return (
     <div
@@ -198,11 +278,10 @@ export function AddStockItemModal({
                   htmlFor={`${baseId}-unidade`}
                   className="preset-body_14/20 mb-1.5 block font-medium text-neutral-800"
                 >
-                  Unidade de Medida <span className="text-primary">*</span>
+                  Unidade de Medida
                 </label>
                 <select
                   id={`${baseId}-unidade`}
-                  required
                   value={unit}
                   onChange={(e) => setUnit(e.target.value as StockUnit)}
                   className={selectClass}
@@ -363,10 +442,11 @@ export function AddStockItemModal({
             </button>
             <Button
               type="submit"
-              title="Adicionar ao Estoque"
+              title={isSubmitting ? "Salvando..." : "Adicionar ao Estoque"}
               icon="Plus"
               color="bg-primary text-white hover:brightness-110 active:brightness-95"
               className="w-full sm:w-auto"
+              disabled={isSubmitting}
             />
           </footer>
         </form>

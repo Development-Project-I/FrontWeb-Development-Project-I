@@ -26,6 +26,7 @@ export interface InventoryStatCardProps {
   label: string;
   value: string | number;
   accent?: InventoryStatAccent;
+  isLoading?: boolean;
   className?: string;
 }
 
@@ -34,6 +35,7 @@ export function InventoryStatCard({
   label,
   value,
   accent = "blue",
+  isLoading = false,
   className,
 }: InventoryStatCardProps) {
   const tone = accents[accent];
@@ -61,7 +63,16 @@ export function InventoryStatCard({
       </div>
       <div className="flex min-w-0 flex-col gap-0.5">
         <p className="preset-body_14/20 font-regular text-neutral-500">{label}</p>
-        <p className={clsx("preset-headline_20/25 font-bold", tone.value)}>{value}</p>
+        <p
+          className={clsx(
+            "preset-headline_20/25 font-bold transition-[filter]",
+            tone.value,
+            isLoading && "select-none blur-md",
+          )}
+          aria-busy={isLoading}
+        >
+          {value}
+        </p>
       </div>
     </article>
   );
