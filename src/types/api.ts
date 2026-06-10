@@ -37,7 +37,7 @@ export interface UpdateInventoryDto {
 export type ApiUserStatus = "ATIVO" | "INATIVO";
 
 export interface ApiUser {
-  id: string;
+  id: string | number;
   name: string;
   sobrenome?: string;
   email: string;

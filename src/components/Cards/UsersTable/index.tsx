@@ -24,14 +24,17 @@ export interface UsersTableProps {
 }
 
 const roleBadge: Record<UserRole, string> = {
-  Estoquista: "bg-blue-100 text-blue-800",
-  Professor: "bg-purple-100 text-purple-800",
-  Administrador: "bg-pink-100 text-pink-900",
+  Estoquista:
+    "bg-blue-100 text-blue-800 dark:bg-blue-900/45 dark:text-blue-300",
+  Professor:
+    "bg-purple-100 text-purple-800 dark:bg-purple-900/45 dark:text-purple-300",
+  Administrador:
+    "bg-pink-100 text-pink-900 dark:bg-pink-900/45 dark:text-pink-300",
 };
 
 const statusBadge: Record<UserStatus, string> = {
-  Ativo: "bg-green-100 text-green-800",
-  Inativo: "bg-neutral-100 text-neutral-600",
+  Ativo: "bg-green-100 text-green-800 dark:bg-green-900/45 dark:text-green-300",
+  Inativo: "bg-neutral-100 text-neutral-600 dark:bg-slate-800 dark:text-slate-400",
 };
 
 export function UsersTable({
@@ -47,13 +50,13 @@ export function UsersTable({
   return (
     <section
       className={clsx(
-        "overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm",
+        "overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900",
         className,
       )}
     >
       <div className="overflow-x-auto">
         <table className="w-full min-w-[960px] border-collapse text-left">
-          <thead className="border-b border-neutral-200 bg-neutral-50">
+          <thead className="border-b border-neutral-200 bg-neutral-50 dark:border-slate-700 dark:bg-slate-800/80">
             <tr>
               {[
                 { label: "Nome", align: "left" },

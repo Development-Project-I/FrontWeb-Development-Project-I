@@ -191,13 +191,13 @@ export function AddStockItemModal({
         aria-modal="true"
         aria-labelledby={`${baseId}-title`}
         aria-describedby={`${baseId}-desc`}
-        className="relative z-[101] flex max-h-[min(92vh,900px)] w-full max-w-2xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
+        className="relative z-[101] flex max-h-[min(92vh,900px)] w-full max-w-2xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl dark:bg-slate-900"
         onClick={(ev) => ev.stopPropagation()}
       >
-        <header className="shrink-0 border-b border-neutral-200 px-6 pb-4 pt-6">
+        <header className="shrink-0 border-b border-neutral-200 px-6 pb-4 pt-6 dark:border-slate-700">
           <div className="flex items-start justify-between gap-4">
             <div className="flex min-w-0 items-start gap-3">
-              <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-green-50">
+              <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-green-50 dark:bg-green-950/50">
                 <Icon
                   name="Package"
                   color="text-green-600"
@@ -402,7 +402,7 @@ export function AddStockItemModal({
               </div>
             </div>
 
-            <div className="rounded-xl border border-blue-200 bg-blue-50/80 p-4">
+            <div className="rounded-xl border border-blue-200 bg-blue-50/80 p-4 dark:border-slate-600 dark:bg-slate-800/80">
               <div className="flex gap-2">
                 <Icon
                   name="Info"
@@ -432,7 +432,7 @@ export function AddStockItemModal({
             </div>
           </div>
 
-          <footer className="flex shrink-0 flex-col-reverse gap-3 bg-white px-6 pb-5 pt-4 sm:flex-row sm:justify-between">
+          <footer className="flex shrink-0 flex-col-reverse gap-3 bg-white px-6 pb-5 pt-4 dark:bg-slate-900 sm:flex-row sm:justify-between">
             <button
               type="button"
               onClick={onClose}

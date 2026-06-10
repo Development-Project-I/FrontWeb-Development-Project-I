@@ -39,7 +39,7 @@ export function SystemInfoCard({
   return (
     <section
       className={clsx(
-        "rounded-xl border border-neutral-200 bg-white p-6 shadow-sm",
+        "rounded-xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900",
         className,
       )}
     >

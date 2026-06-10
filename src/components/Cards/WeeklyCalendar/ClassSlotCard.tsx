@@ -23,9 +23,18 @@ const accentStyles: Record<
   ClassSlotAccent,
   { bg: string; border: string }
 > = {
-  red: { bg: "bg-red-50", border: "border-l-red-500" },
-  blue: { bg: "bg-blue-50", border: "border-l-blue-500" },
-  amber: { bg: "bg-yellow-50", border: "border-l-yellow-400" },
+  red: {
+    bg: "bg-red-50 dark:bg-red-950/50",
+    border: "border-l-red-500 dark:border-l-red-400",
+  },
+  blue: {
+    bg: "bg-blue-50 dark:bg-slate-800",
+    border: "border-l-blue-500 dark:border-l-blue-400",
+  },
+  amber: {
+    bg: "bg-yellow-50 dark:bg-amber-950/50",
+    border: "border-l-yellow-400 dark:border-l-amber-400",
+  },
 };
 
 const cardClass = (tone: AccentStyle, className?: string) =>
@@ -33,7 +42,7 @@ const cardClass = (tone: AccentStyle, className?: string) =>
     "relative w-full rounded-md border-l-4 p-3 pr-24 text-left shadow-sm transition",
     tone.bg,
     tone.border,
-    "hover:brightness-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
+    "hover:brightness-[0.98] dark:hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
     className,
   );
 

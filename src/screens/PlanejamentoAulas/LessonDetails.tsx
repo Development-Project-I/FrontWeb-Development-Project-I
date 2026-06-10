@@ -219,7 +219,7 @@ export function LessonDetails() {
           <button
             type="button"
             onClick={() => navigate("/planejamento-aulas")}
-            className="flex size-10 shrink-0 items-center justify-center rounded-lg text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900"
+            className="flex size-10 shrink-0 items-center justify-center rounded-lg text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
             aria-label="Voltar para Planejamento de Aulas"
           >
             <Icon name="ArrowLeft" className="size-5" strokeWidth={2} aria-hidden />
@@ -304,7 +304,7 @@ export function LessonDetails() {
               </li>
             </>
           ) : ingredients.length === 0 ? (
-            <li className="preset-body_14/20 rounded-lg border border-neutral-200 bg-neutral-50 p-4 text-neutral-600">
+            <li className="preset-body_14/20 rounded-lg border border-neutral-200 bg-neutral-50 p-4 text-neutral-600 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-400">
               Nenhum ingrediente adicionado a esta aula.
             </li>
           ) : (

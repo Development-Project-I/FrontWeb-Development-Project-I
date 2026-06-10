@@ -18,7 +18,7 @@ export function LessonIngredientDetailCardSkeleton({
   return (
     <article
       className={clsx(
-        "overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm",
+        "overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900",
         className,
       )}
       role="status"
@@ -42,9 +42,9 @@ export function LessonIngredientDetailCardSkeleton({
 }
 
 const badgeStyles = {
-  OK: "bg-green-100 text-green-800",
-  Baixo: "bg-amber-100 text-amber-800",
-  SemEstoque: "bg-red-100 text-red-700",
+  OK: "bg-green-100 text-green-800 dark:bg-green-900/45 dark:text-green-300",
+  Baixo: "bg-amber-100 text-amber-800 dark:bg-amber-900/45 dark:text-amber-300",
+  SemEstoque: "bg-red-100 text-red-700 dark:bg-red-900/45 dark:text-red-300",
 } as const;
 
 const badgeLabels = {
@@ -54,20 +54,22 @@ const badgeLabels = {
 } as const;
 
 const disponivelStyles = {
-  OK: "text-green-700",
-  Baixo: "text-amber-600",
-  SemEstoque: "text-red-600",
+  OK: "text-green-700 dark:text-green-400",
+  Baixo: "text-amber-600 dark:text-amber-400",
+  SemEstoque: "text-red-600 dark:text-red-400",
 } as const;
 
 const borderStyles = {
-  OK: "border-neutral-200",
-  Baixo: "border-amber-300",
-  SemEstoque: "border-red-300",
+  OK: "border-neutral-200 dark:border-slate-700",
+  Baixo: "border-amber-300 dark:border-amber-800/60",
+  SemEstoque: "border-red-300 dark:border-red-800/60",
 } as const;
 
 const alertStyles = {
-  Baixo: "border-amber-200 bg-amber-50/80 text-amber-800",
-  SemEstoque: "border-red-200 bg-red-50/80 text-red-700",
+  Baixo:
+    "border-amber-200 bg-amber-50/80 text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/50 dark:text-amber-300",
+  SemEstoque:
+    "border-red-200 bg-red-50/80 text-red-700 dark:border-red-900/60 dark:bg-red-950/50 dark:text-red-300",
 } as const;
 
 export function LessonIngredientDetailCard({
@@ -107,7 +109,7 @@ export function LessonIngredientDetailCard({
   return (
     <article
       className={clsx(
-        "overflow-hidden rounded-xl border bg-white shadow-sm",
+        "overflow-hidden rounded-xl border bg-white shadow-sm dark:bg-slate-900",
         borderStyles[status],
         className,
       )}

@@ -4,6 +4,7 @@ import textPlugin, { textPresetStyles } from "./src/plugins/text-plugin.js";
 const presetSafelist = Object.keys(textPresetStyles).map((key) => `preset-${key}`);
 
 module.exports = {
+    darkMode: "class",
     content: [
         "./index.html",
         "./src/**/*.{js,ts,jsx,tsx}",
@@ -12,8 +13,8 @@ module.exports = {
     theme: {
         extend: {
             colors: {
-                "primary": EnvConfig.PRIMARY_COLOR,
-                "secondary": EnvConfig.SECONDARY_COLOR,
+                "primary": "var(--app-primary, " + EnvConfig.PRIMARY_COLOR + ")",
+                "secondary": "var(--app-secondary, " + EnvConfig.SECONDARY_COLOR + ")",
 
                 "white": "#FFFFFF",
                 "black": "#000000",

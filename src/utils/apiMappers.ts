@@ -19,6 +19,7 @@ import type {
   AulaInventoryItem,
 } from "../types/api";
 import type { AccessType } from "../components/Modals/CreateUserModal";
+import type { AuthUser } from "../types/auth";
 import type { UserRole, UserStatus } from "../constants/users";
 import type { ClassSlotAccent } from "../components/Cards/WeeklyCalendar/ClassSlotCard";
 import {
@@ -151,6 +152,20 @@ export function mapApiUserToRow(user: ApiUser): UserListRow {
     role: apiRoleToUserRole(user.role),
     status: mapApiUserStatus(user.status),
     lastAccess: formatLastAccess(user.lastAccess),
+  };
+}
+
+export function mapApiUserToAuthUser(
+  user: ApiUser,
+  accessToken?: string,
+): AuthUser {
+  const fullName = [user.name, user.sobrenome].filter(Boolean).join(" ").trim();
+  return {
+    id: user.id,
+    name: fullName || user.name,
+    email: user.email,
+    role: user.role,
+    accessToken,
   };
 }
 

@@ -27,19 +27,19 @@ const cardAccentStyles: Record<
   { bg: string; border: string; divider: string }
 > = {
   red: {
-    bg: "bg-red-50",
-    border: "border-red-100",
-    divider: "border-red-100",
+    bg: "bg-red-50 dark:bg-red-950/40",
+    border: "border-red-100 dark:border-red-900/50",
+    divider: "border-red-100 dark:border-red-900/50",
   },
   amber: {
-    bg: "bg-yellow-50",
-    border: "border-yellow-200",
-    divider: "border-yellow-200",
+    bg: "bg-yellow-50 dark:bg-amber-950/40",
+    border: "border-yellow-200 dark:border-amber-900/50",
+    divider: "border-yellow-200 dark:border-amber-900/50",
   },
   blue: {
-    bg: "bg-blue-50",
-    border: "border-blue-100",
-    divider: "border-blue-100",
+    bg: "bg-blue-50 dark:bg-slate-800/80",
+    border: "border-blue-100 dark:border-slate-600",
+    divider: "border-blue-100 dark:border-slate-600",
   },
 };
 
@@ -105,7 +105,7 @@ export function NextLessonCard({
         <h2 className="preset-headline_20/25 min-w-0 flex-1 font-bold text-neutral-900">
           {lesson.title}
         </h2>
-        <span className="preset-tag_12/16 shrink-0 rounded-full bg-blue-100 px-3 py-1.5 font-semibold text-blue-800">
+        <span className="preset-tag_12/16 shrink-0 rounded-full bg-blue-100 px-3 py-1.5 font-semibold text-blue-800 dark:bg-blue-900/50 dark:text-blue-300">
           Próxima Aula
         </span>
       </div>
@@ -181,7 +181,7 @@ export function NextLessonCard({
                 </h3>
               </div>
               {ingredients.length === 0 ? (
-                <p className="preset-body_14/20 mt-4 rounded-lg border border-neutral-200 bg-white px-4 py-3 text-neutral-600">
+                <p className="preset-body_14/20 mt-4 rounded-lg border border-neutral-200 bg-white px-4 py-3 text-neutral-600 dark:border-slate-600 dark:bg-slate-900/80 dark:text-slate-400">
                   Nenhum ingrediente adicionado a esta aula.
                 </p>
               ) : (

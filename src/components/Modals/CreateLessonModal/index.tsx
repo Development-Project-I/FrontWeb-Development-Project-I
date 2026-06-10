@@ -150,13 +150,13 @@ export function CreateLessonModal({
         aria-modal="true"
         aria-labelledby={`${baseId}-title`}
         aria-describedby={`${baseId}-desc`}
-        className="relative z-[101] flex w-full max-w-lg flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
+        className="relative z-[101] flex w-full max-w-lg flex-col overflow-hidden rounded-2xl bg-white shadow-2xl dark:bg-slate-900"
         onClick={(ev) => ev.stopPropagation()}
       >
-        <header className="shrink-0 border-b border-neutral-200 px-6 pb-4 pt-6">
+        <header className="shrink-0 border-b border-neutral-200 px-6 pb-4 pt-6 dark:border-slate-700">
           <div className="flex items-start justify-between gap-4">
             <div className="flex min-w-0 items-start gap-3">
-              <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-blue-50">
+              <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-950/50">
                 <Icon
                   name="CalendarPlus"
                   color="text-blue-600"
@@ -319,14 +319,14 @@ export function CreateLessonModal({
               </div>
             </div>
             {slotTaken ? (
-              <p className="preset-body_12/16 text-amber-700">
+              <p className="preset-body_12/16 text-amber-700 dark:text-amber-400">
                 Este horário já possui uma aula no calendário semanal. Escolha outro
                 dia ou horário.
               </p>
             ) : null}
           </div>
 
-          <footer className="flex shrink-0 flex-col-reverse gap-3 bg-white px-6 pb-5 pt-4 sm:flex-row sm:justify-between">
+          <footer className="flex shrink-0 flex-col-reverse gap-3 bg-white px-6 pb-5 pt-4 dark:bg-slate-900 sm:flex-row sm:justify-between">
             <button
               type="button"
               onClick={onClose}

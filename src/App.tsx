@@ -3,6 +3,7 @@ import { BrowserRouter, Navigate, useLocation } from "react-router-dom";
 import { Header } from "./components/Header";
 import { TabBar } from "./components/TabBar";
 import { canAccessRoute, getHomeRoute } from "./config/permissions";
+import { AppearanceProvider } from "./contexts/AppearanceContext";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { ToastProvider } from "./contexts/ToastContext";
 import { AppRoutes } from "./routes/app.routes";
@@ -31,7 +32,7 @@ function AppShell() {
     }
 
     return (
-      <div className="min-h-screen bg-neutral-50">
+      <div className="min-h-screen bg-neutral-50 dark:bg-slate-950">
         <AppRoutes />
       </div>
     );
@@ -46,7 +47,7 @@ function AppShell() {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-neutral-50">
+    <div className="flex h-screen overflow-hidden bg-neutral-50 dark:bg-slate-950">
       <TabBar />
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         <Header />
@@ -60,13 +61,15 @@ function AppShell() {
 
 function App() {
   return (
-    <AuthProvider>
-      <ToastProvider>
-        <BrowserRouter>
-          <AppShell />
-        </BrowserRouter>
-      </ToastProvider>
-    </AuthProvider>
+    <AppearanceProvider>
+      <AuthProvider>
+        <ToastProvider>
+          <BrowserRouter>
+            <AppShell />
+          </BrowserRouter>
+        </ToastProvider>
+      </AuthProvider>
+    </AppearanceProvider>
   );
 }
 

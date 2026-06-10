@@ -15,6 +15,7 @@ interface AuthContextValue {
   user: AuthUser | null;
   isAuthenticated: boolean;
   login: (user: AuthUser) => void;
+  updateUser: (user: AuthUser) => void;
   logout: () => void;
 }
 
@@ -68,6 +69,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(nextUser));
   }, []);
 
+  const updateUser = useCallback((nextUser: AuthUser) => {
+    setUser(nextUser);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(nextUser));
+  }, []);
+
   const logout = useCallback(() => {
     setUser(null);
     localStorage.removeItem(STORAGE_KEY);
@@ -78,9 +84,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
       user,
       isAuthenticated: user !== null,
       login,
+      updateUser,
       logout,
     }),
-    [user, login, logout],
+    [user, login, updateUser, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -70,9 +70,9 @@ export function TabBar() {
   );
 
   return (
-    <aside className="sticky top-0 z-30 flex h-screen w-[260px] shrink-0 flex-col overflow-y-auto border-r border-neutral-200 bg-white px-4 py-8">
+    <aside className="sticky top-0 z-30 flex h-screen w-[260px] shrink-0 flex-col overflow-y-auto border-r border-neutral-200 bg-white px-4 py-8 dark:border-slate-700 dark:bg-slate-900">
       <div className="px-2">
-        <span className="text-xl font-bold tracking-tight text-neutral-900">
+        <span className="text-xl font-bold tracking-tight text-neutral-900 dark:text-slate-100">
           GastroPlan
         </span>
       </div>
@@ -88,7 +88,7 @@ export function TabBar() {
                 "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                 isActive
                   ? "bg-secondary text-primary"
-                  : "text-neutral-500 hover:bg-neutral-50 hover:text-neutral-700",
+                  : "text-neutral-500 hover:bg-neutral-50 hover:text-neutral-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200",
               )
             }
           >

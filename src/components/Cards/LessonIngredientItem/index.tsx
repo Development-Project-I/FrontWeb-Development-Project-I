@@ -18,9 +18,9 @@ export interface LessonIngredientItemProps {
 }
 
 const statusBadge: Record<IngredientStockStatus, string> = {
-  OK: "bg-green-100 text-green-800",
-  Baixo: "bg-amber-100 text-amber-800",
-  Esgotado: "bg-red-100 text-red-700",
+  OK: "bg-green-100 text-green-800 dark:bg-green-900/45 dark:text-green-300",
+  Baixo: "bg-amber-100 text-amber-800 dark:bg-amber-900/45 dark:text-amber-300",
+  Esgotado: "bg-red-100 text-red-700 dark:bg-red-900/45 dark:text-red-300",
 };
 
 export function LessonIngredientItem({
@@ -34,7 +34,7 @@ export function LessonIngredientItem({
   return (
     <article
       className={clsx(
-        "flex items-center gap-4 rounded-lg border border-neutral-200 bg-white px-4 py-3",
+        "flex items-center gap-4 rounded-lg border border-neutral-200 bg-white px-4 py-3 dark:border-slate-700 dark:bg-slate-900/80",
         className,
       )}
     >

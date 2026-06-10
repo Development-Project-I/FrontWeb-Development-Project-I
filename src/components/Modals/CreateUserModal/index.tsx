@@ -142,13 +142,13 @@ export function CreateUserModal({ isOpen, onClose, onAdd }: CreateUserModalProps
         aria-modal="true"
         aria-labelledby={`${baseId}-title`}
         aria-describedby={`${baseId}-desc`}
-        className="relative z-[101] flex w-full max-w-lg flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
+        className="relative z-[101] flex w-full max-w-lg flex-col overflow-hidden rounded-2xl bg-white shadow-2xl dark:bg-slate-900"
         onClick={(ev) => ev.stopPropagation()}
       >
-        <header className="shrink-0 border-b border-neutral-200 px-6 pb-4 pt-6">
+        <header className="shrink-0 border-b border-neutral-200 px-6 pb-4 pt-6 dark:border-slate-700">
           <div className="flex items-start justify-between gap-4">
             <div className="flex min-w-0 items-start gap-3">
-              <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-violet-100">
+              <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-violet-100 dark:bg-violet-950/50">
                 <Icon
                   name="User"
                   color="text-violet-600"
@@ -300,8 +300,8 @@ export function CreateUserModal({ isOpen, onClose, onAdd }: CreateUserModalProps
                       className={clsx(
                         "flex flex-col items-center gap-2 rounded-xl border-2 p-4 text-center transition",
                         selected
-                          ? "border-primary bg-primary/[0.06] shadow-sm"
-                          : "border-neutral-200 bg-white hover:border-neutral-300",
+                          ? "border-primary bg-primary/[0.06] shadow-sm dark:bg-primary/15"
+                          : "border-neutral-200 bg-white hover:border-neutral-300 dark:border-slate-600 dark:bg-slate-800 dark:hover:border-slate-500",
                       )}
                     >
                       <span
@@ -325,7 +325,7 @@ export function CreateUserModal({ isOpen, onClose, onAdd }: CreateUserModalProps
             </div>
 
             {accessType != null ? (
-              <div className="rounded-xl border border-blue-200 bg-blue-50/80 p-4">
+              <div className="rounded-xl border border-blue-200 bg-blue-50/80 p-4 dark:border-slate-600 dark:bg-slate-800/80">
                 <p className="preset-body_14/20 font-bold text-neutral-900">
                   Resumo do Cadastro
                 </p>
@@ -349,7 +349,7 @@ export function CreateUserModal({ isOpen, onClose, onAdd }: CreateUserModalProps
             ) : null}
           </div>
 
-          <footer className="flex shrink-0 flex-col-reverse gap-3 bg-white px-6 pb-5 pt-4 sm:flex-row sm:justify-between">
+          <footer className="flex shrink-0 flex-col-reverse gap-3 bg-white px-6 pb-5 pt-4 dark:bg-slate-900 sm:flex-row sm:justify-between">
             <button
               type="button"
               onClick={onClose}

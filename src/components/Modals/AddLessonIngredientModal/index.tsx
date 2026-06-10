@@ -135,13 +135,13 @@ export function AddLessonIngredientModal({
         aria-modal="true"
         aria-labelledby={`${baseId}-title`}
         aria-describedby={`${baseId}-desc`}
-        className="relative z-[101] flex w-full max-w-lg flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
+        className="relative z-[101] flex w-full max-w-lg flex-col overflow-hidden rounded-2xl bg-white shadow-2xl dark:bg-slate-900"
         onClick={(ev) => ev.stopPropagation()}
       >
-        <header className="shrink-0 border-b border-neutral-200 px-6 pb-4 pt-6">
+        <header className="shrink-0 border-b border-neutral-200 px-6 pb-4 pt-6 dark:border-slate-700">
           <div className="flex items-start justify-between gap-4">
             <div className="flex min-w-0 items-start gap-3">
-              <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-blue-50">
+              <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-950/50">
                 <Icon
                   name="Package"
                   color="text-blue-600"
@@ -179,7 +179,7 @@ export function AddLessonIngredientModal({
         <form onSubmit={handleSubmit} className="flex flex-col">
           <div className="space-y-5 px-6 py-5">
             {availableItems.length === 0 ? (
-              <p className="preset-body_14/20 rounded-lg border border-neutral-200 bg-neutral-50 p-4 text-neutral-600">
+              <p className="preset-body_14/20 rounded-lg border border-neutral-200 bg-neutral-50 p-4 text-neutral-600 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-400">
                 Todos os itens do estoque já foram adicionados a esta aula.
               </p>
             ) : (
@@ -210,7 +210,7 @@ export function AddLessonIngredientModal({
                     <button
                       type="button"
                       onClick={handleSearch}
-                      className="shrink-0 rounded-lg border border-neutral-200 bg-white px-3 py-2.5 text-sm font-medium text-neutral-700 transition hover:bg-neutral-50"
+                      className="shrink-0 rounded-lg border border-neutral-200 bg-white px-3 py-2.5 text-sm font-medium text-neutral-700 transition hover:bg-neutral-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                     >
                       Buscar
                     </button>
@@ -246,8 +246,8 @@ export function AddLessonIngredientModal({
                               className={clsx(
                                 "flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left text-sm transition-colors",
                                 isSelected
-                                  ? "bg-blue-50 text-primary"
-                                  : "text-neutral-800 hover:bg-neutral-50",
+                                  ? "bg-blue-50 text-primary dark:bg-blue-900/50 dark:text-blue-300"
+                                  : "text-neutral-800 hover:bg-neutral-50 dark:text-slate-200 dark:hover:bg-slate-800",
                               )}
                             >
                               <span>
@@ -274,7 +274,7 @@ export function AddLessonIngredientModal({
                       ({selected.category})
                     </p>
                   ) : (
-                    <p className="preset-body_12/16 mt-1.5 text-amber-700">
+                    <p className="preset-body_12/16 mt-1.5 text-amber-700 dark:text-amber-400">
                       Selecione um item na lista acima.
                     </p>
                   )}
@@ -338,7 +338,7 @@ export function AddLessonIngredientModal({
             )}
           </div>
 
-          <footer className="flex shrink-0 flex-col-reverse gap-3 bg-white px-6 pb-5 pt-4 sm:flex-row sm:justify-between">
+          <footer className="flex shrink-0 flex-col-reverse gap-3 bg-white px-6 pb-5 pt-4 dark:bg-slate-900 sm:flex-row sm:justify-between">
             <button
               type="button"
               onClick={onClose}

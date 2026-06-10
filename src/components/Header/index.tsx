@@ -39,7 +39,7 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-20 flex h-[72px] shrink-0 items-center justify-end gap-6 border-b border-neutral-200 bg-white px-8">
+    <header className="sticky top-0 z-20 flex h-[72px] shrink-0 items-center justify-end gap-6 border-b border-neutral-200 bg-white px-8 dark:border-slate-700 dark:bg-slate-900">
       <div className="flex items-center gap-6">
         <button
           type="button"
@@ -65,7 +65,7 @@ export function Header() {
             >
               <User className="size-5" strokeWidth={2} />
             </div>
-            <span className="text-sm font-bold text-neutral-900">
+            <span className="text-sm font-bold text-neutral-900 dark:text-slate-100">
               {user?.name ?? "Usuário"}
             </span>
             <ChevronDown

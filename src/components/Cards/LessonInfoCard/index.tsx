@@ -17,11 +17,11 @@ export function LessonInfoCard({
   return (
     <article
       className={clsx(
-        "rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-4",
+        "rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-4 dark:border-slate-700 dark:bg-slate-800/60",
         className,
       )}
     >
-      <div className="flex items-center gap-2 text-neutral-500">
+      <div className="flex items-center gap-2 text-neutral-500 dark:text-slate-400">
         <Icon name={icon} className="size-4 shrink-0" strokeWidth={2} aria-hidden />
         <span className="preset-body_12/16 font-medium">{label}</span>
       </div>

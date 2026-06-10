@@ -5,9 +5,12 @@ import type { AccessType } from "../CreateUserModal";
 import { Button } from "../../Button";
 import { Icon } from "../../Icon";
 
+export type EditUserModalMode = "admin" | "profile";
+
 export interface EditUserModalProps {
   isOpen: boolean;
   onClose: () => void;
+  mode?: EditUserModalMode;
   initialData?: {
     firstName: string;
     lastName: string;
@@ -55,9 +58,11 @@ const inputClass =
 export function EditUserModal({
   isOpen,
   onClose,
+  mode = "admin",
   initialData,
   onSave,
 }: EditUserModalProps) {
+  const isProfileMode = mode === "profile";
   const baseId = useId();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -133,13 +138,13 @@ export function EditUserModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby={`${baseId}-title`}
-        className="relative z-[101] flex w-full max-w-lg flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
+        className="relative z-[101] flex w-full max-w-lg flex-col overflow-hidden rounded-2xl bg-white shadow-2xl dark:bg-slate-900"
         onClick={(ev) => ev.stopPropagation()}
       >
-        <header className="shrink-0 border-b border-neutral-200 px-6 pb-4 pt-6">
+        <header className="shrink-0 border-b border-neutral-200 px-6 pb-4 pt-6 dark:border-slate-700">
           <div className="flex items-start justify-between gap-4">
             <div className="flex min-w-0 items-start gap-3">
-              <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-blue-50">
+              <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-950/50">
                 <Icon
                   name="SquarePen"
                   color="text-blue-600"
@@ -153,10 +158,12 @@ export function EditUserModal({
                   id={`${baseId}-title`}
                   className="preset-headline_20/25 font-bold text-neutral-900"
                 >
-                  Editar Usuário
+                  {isProfileMode ? "Meu Perfil" : "Editar Usuário"}
                 </h2>
                 <p className="preset-body_14/20 mt-1 text-neutral-500">
-                  Atualize os dados do usuário
+                  {isProfileMode
+                    ? "Atualize suas informações pessoais"
+                    : "Atualize os dados do usuário"}
                 </p>
               </div>
             </div>
@@ -241,42 +248,44 @@ export function EditUserModal({
               />
             </div>
 
-            <fieldset>
-              <legend className="preset-body_14/20 mb-2 font-medium text-neutral-800">
-                Tipo de acesso
-              </legend>
-              <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-                {accessOptions.map((option) => (
-                  <label
-                    key={option.id}
-                    className={clsx(
-                      "flex cursor-pointer flex-col rounded-xl border p-3 transition-colors",
-                      accessType === option.id
-                        ? "border-primary bg-blue-50/50"
-                        : "border-neutral-200 hover:border-neutral-300",
-                    )}
-                  >
-                    <input
-                      type="radio"
-                      name={`${baseId}-access`}
-                      value={option.id}
-                      checked={accessType === option.id}
-                      onChange={() => setAccessType(option.id)}
-                      className="sr-only"
-                    />
-                    <span className="preset-body_14/20 font-semibold text-neutral-900">
-                      {option.title}
-                    </span>
-                    <span className="preset-body_12/16 text-neutral-500">
-                      {option.description}
-                    </span>
-                  </label>
-                ))}
-              </div>
-            </fieldset>
+            {!isProfileMode ? (
+              <fieldset>
+                <legend className="preset-body_14/20 mb-2 font-medium text-neutral-800">
+                  Tipo de acesso
+                </legend>
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                  {accessOptions.map((option) => (
+                    <label
+                      key={option.id}
+                      className={clsx(
+                        "flex cursor-pointer flex-col rounded-xl border p-3 transition-colors",
+                        accessType === option.id
+                          ? "border-primary bg-blue-50/50 dark:bg-primary/15"
+                          : "border-neutral-200 hover:border-neutral-300 dark:border-slate-600 dark:hover:border-slate-500",
+                      )}
+                    >
+                      <input
+                        type="radio"
+                        name={`${baseId}-access`}
+                        value={option.id}
+                        checked={accessType === option.id}
+                        onChange={() => setAccessType(option.id)}
+                        className="sr-only"
+                      />
+                      <span className="preset-body_14/20 font-semibold text-neutral-900">
+                        {option.title}
+                      </span>
+                      <span className="preset-body_12/16 text-neutral-500">
+                        {option.description}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+            ) : null}
           </div>
 
-          <footer className="flex shrink-0 flex-col-reverse gap-3 bg-white px-6 pb-5 pt-4 sm:flex-row sm:justify-between">
+          <footer className="flex shrink-0 flex-col-reverse gap-3 bg-white px-6 pb-5 pt-4 dark:bg-slate-900 sm:flex-row sm:justify-between">
             <button
               type="button"
               onClick={onClose}

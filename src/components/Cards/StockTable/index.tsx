@@ -28,38 +28,38 @@ export interface StockTableProps {
 }
 
 const rowBg: Record<StockRowVariant, string> = {
-  default: "bg-white",
-  expired: "bg-red-50",
-  warning: "bg-amber-50",
+  default: "bg-white dark:bg-slate-900",
+  expired: "bg-red-50 dark:bg-red-950/45",
+  warning: "bg-amber-50 dark:bg-amber-950/45",
 };
 
 const statusBadge: Record<StockRowStatus, string> = {
-  OK: "bg-green-100 text-green-800",
-  Baixo: "bg-amber-100 text-amber-800",
+  OK: "bg-green-100 text-green-800 dark:bg-green-900/45 dark:text-green-300",
+  Baixo: "bg-amber-100 text-amber-800 dark:bg-amber-900/45 dark:text-amber-300",
 };
 
 const expirationText: Record<ExpirationTone, string> = {
-  green: "text-green-700",
-  red: "text-red-600",
-  amber: "text-amber-600",
+  green: "text-green-700 dark:text-green-400",
+  red: "text-red-600 dark:text-red-400",
+  amber: "text-amber-600 dark:text-amber-400",
 };
 
 const clockColor: Record<"red" | "amber", string> = {
-  red: "text-red-600",
-  amber: "text-amber-500",
+  red: "text-red-600 dark:text-red-400",
+  amber: "text-amber-500 dark:text-amber-400",
 };
 
 export function StockTable({ rows, onEdit, className }: StockTableProps) {
   return (
     <section
       className={clsx(
-        "overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm",
+        "overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900",
         className,
       )}
     >
       <div className="overflow-x-auto">
         <table className="w-full min-w-[960px] border-collapse text-left">
-          <thead className="border-b border-neutral-200 bg-neutral-50">
+          <thead className="border-b border-neutral-200 bg-neutral-50 dark:border-slate-700 dark:bg-slate-800/80">
             <tr>
               {[
                 { label: "Nome do item", align: "left" },
@@ -157,7 +157,7 @@ export function StockTable({ rows, onEdit, className }: StockTableProps) {
                     <button
                       type="button"
                       onClick={() => onEdit?.(row)}
-                      className="preset-body_14/20 inline-flex items-center gap-1.5 font-semibold text-blue-600 transition-colors hover:text-blue-700"
+                      className="preset-body_14/20 inline-flex items-center gap-1.5 font-semibold text-blue-600 transition-colors hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
                     >
                       <Icon name="SquarePen" className="size-4" strokeWidth={2} aria-hidden />
                       Editar

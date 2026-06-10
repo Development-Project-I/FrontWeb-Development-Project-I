@@ -21,15 +21,15 @@ const timeSlots = LESSON_TIME_SLOTS;
 const ROW_HEIGHT = "h-[104px]";
 
 const headerCellClass =
-  "border border-neutral-200 px-3 py-3 text-sm font-medium text-neutral-500";
+  "border border-neutral-200 px-3 py-3 text-sm font-medium text-neutral-500 dark:border-slate-700 dark:text-slate-400";
 
 const timeCellClass = clsx(
-  "border border-neutral-200 bg-white px-4 py-4 align-top text-sm text-neutral-500",
+  "border border-neutral-200 bg-white px-4 py-4 align-top text-sm text-neutral-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400",
   ROW_HEIGHT,
 );
 
 const dayCellClass = clsx(
-  "border border-neutral-200 bg-white align-top p-2",
+  "border border-neutral-200 bg-white align-top p-2 dark:border-slate-700 dark:bg-slate-900",
   ROW_HEIGHT,
 );
 
@@ -49,7 +49,7 @@ export function WeeklyCalendar({
   return (
     <section
       className={clsx(
-        "overflow-hidden rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm",
+        "overflow-hidden rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900",
         className,
       )}
     >
@@ -57,10 +57,10 @@ export function WeeklyCalendar({
         Calendário Semanal
       </h2>
 
-      <div className="mt-6 overflow-x-auto rounded-lg border border-neutral-200">
-        <table className="w-full min-w-[800px] border-collapse bg-white">
+      <div className="mt-6 overflow-x-auto rounded-lg border border-neutral-200 dark:border-slate-700">
+        <table className="w-full min-w-[800px] border-collapse bg-white dark:bg-slate-900">
           <thead>
-            <tr className="bg-neutral-50">
+            <tr className="bg-neutral-50 dark:bg-slate-800/80">
               <th
                 scope="col"
                 className={clsx(headerCellClass, "w-[88px] text-left")}
