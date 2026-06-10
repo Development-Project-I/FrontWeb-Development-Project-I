@@ -1,9 +1,11 @@
 /** Perfis retornados pelo backend (`POST /auth/login`, `GET /users`, etc.). */
-export enum ApiUserRole {
-  ADMIN = "ADMIN",
-  ESTOQUISTA = "ESTOQUISTA",
-  PROFESSOR = "PROFESSOR",
-}
+export const ApiUserRole = {
+  ADMIN: "ADMIN",
+  ESTOQUISTA: "ESTOQUISTA",
+  PROFESSOR: "PROFESSOR",
+} as const;
+
+export type ApiUserRole = (typeof ApiUserRole)[keyof typeof ApiUserRole];
 
 export const API_USER_ROLES = Object.values(ApiUserRole) as ApiUserRole[];
 

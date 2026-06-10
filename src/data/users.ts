@@ -15,6 +15,8 @@ const users: UserListRow[] = [
   {
     id: "1",
     name: "João Silva",
+    firstName: "João",
+    lastName: "Silva",
     email: "joao.silva@gastroplan.com",
     role: "Estoquista",
     status: "Ativo",
@@ -23,6 +25,8 @@ const users: UserListRow[] = [
   {
     id: "2",
     name: "Maria Santos",
+    firstName: "Maria",
+    lastName: "Santos",
     email: "maria.santos@gastroplan.com",
     role: "Professor",
     status: "Ativo",
@@ -31,6 +35,8 @@ const users: UserListRow[] = [
   {
     id: "3",
     name: "Carlos Admin",
+    firstName: "Carlos",
+    lastName: "Admin",
     email: "carlos.admin@gastroplan.com",
     role: "Administrador",
     status: "Ativo",
@@ -39,6 +45,8 @@ const users: UserListRow[] = [
   {
     id: "4",
     name: "Ana Estoque",
+    firstName: "Ana",
+    lastName: "Estoque",
     email: "ana.estoque@gastroplan.com",
     role: "Estoquista",
     status: "Inativo",
@@ -47,6 +55,8 @@ const users: UserListRow[] = [
   {
     id: "5",
     name: "Pedro Lima",
+    firstName: "Pedro",
+    lastName: "Lima",
     email: "pedro.lima@gastroplan.com",
     role: "Professor",
     status: "Ativo",
@@ -55,6 +65,8 @@ const users: UserListRow[] = [
   {
     id: "6",
     name: "Juliana Costa",
+    firstName: "Juliana",
+    lastName: "Costa",
     email: "juliana.costa@gastroplan.com",
     role: "Estoquista",
     status: "Ativo",
@@ -134,6 +146,8 @@ export function addUser(input: CreateUserInput): UserListRow {
   const row: UserListRow = {
     id: String(nextUserId++),
     name,
+    firstName: input.firstName,
+    lastName: input.lastName,
     email: input.email,
     role: accessTypeToRole(input.accessType),
     status: "Ativo" satisfies UserStatus,

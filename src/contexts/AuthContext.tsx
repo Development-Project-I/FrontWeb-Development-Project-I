@@ -7,7 +7,7 @@ import {
   type ReactNode,
 } from "react";
 import type { AuthUser } from "../types/auth";
-import { isApiUserRole, type ApiUserRole } from "../constants/apiUserRole";
+import { isApiUserRole } from "../constants/apiUserRole";
 
 const STORAGE_KEY = "gastroplan_auth";
 
