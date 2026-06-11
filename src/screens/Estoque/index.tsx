@@ -15,6 +15,7 @@ import {
 import { useToast } from "../../contexts/ToastContext";
 import { inventoryService } from "../../services/inventory.service";
 import { Icon } from "../../components/Icon";
+import { PageContainer } from "../../components/Layout/PageContainer";
 import { Text } from "../../components/Text";
 import { mapInventoryToStockRow } from "../../utils/apiMappers";
 import {
@@ -173,7 +174,7 @@ export function Estoque() {
   }
 
   return (
-    <div className="flex min-h-0 w-full flex-1 flex-col p-8">
+    <PageContainer>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <Text preset="headline_32/40" fontWeight="bold" color="black">
           Estoque
@@ -267,6 +268,6 @@ export function Estoque() {
           onEdit={openEditModal}
         />
       )}
-    </div>
+    </PageContainer>
   );
 }

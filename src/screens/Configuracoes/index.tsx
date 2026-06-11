@@ -15,6 +15,7 @@ import {
   mapApiUserToAuthUser,
   userRoleToAccessType,
 } from "../../utils/apiMappers";
+import { PageContainer } from "../../components/Layout/PageContainer";
 import { Text } from "../../components/Text";
 
 interface SettingsItem {
@@ -208,7 +209,7 @@ export function Configuracoes() {
   }
 
   return (
-    <div className="flex min-h-0 w-full flex-1 flex-col p-8">
+    <PageContainer>
       <Text preset="headline_32/40" fontWeight="bold" color="black">
         Configurações
       </Text>
@@ -247,6 +248,6 @@ export function Configuracoes() {
         initialSettings={settings}
         onSave={handleSaveAppearance}
       />
-    </div>
+    </PageContainer>
   );
 }

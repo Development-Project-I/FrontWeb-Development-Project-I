@@ -21,6 +21,7 @@ import {
 } from "../../utils/apiMappers";
 import { ConfirmDropdown } from "../../components/ConfirmDropdown";
 import { Icon } from "../../components/Icon";
+import { PageContainer } from "../../components/Layout/PageContainer";
 import { Text } from "../../components/Text";
 
 export function LessonDetails() {
@@ -109,9 +110,9 @@ export function LessonDetails() {
 
   if (loading) {
     return (
-      <div className="p-8">
+      <PageContainer>
         <p className="preset-body_14/20 text-neutral-500">Carregando aula...</p>
-      </div>
+      </PageContainer>
     );
   }
 
@@ -213,7 +214,7 @@ export function LessonDetails() {
   }
 
   return (
-    <div className="flex min-h-0 w-full flex-1 flex-col p-8">
+    <PageContainer>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex min-w-0 items-center gap-3">
           <button
@@ -328,6 +329,6 @@ export function LessonDetails() {
         excludedStockIds={excludedStockIds}
         onAdd={handleAddIngredient}
       />
-    </div>
+    </PageContainer>
   );
 }

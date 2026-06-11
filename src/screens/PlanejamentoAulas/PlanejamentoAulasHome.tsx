@@ -22,6 +22,7 @@ import {
 } from "../../utils/apiMappers";
 import type { Teacher } from "../../components/Cards/TeacherCard";
 import { Icon } from "../../components/Icon";
+import { PageContainer } from "../../components/Layout/PageContainer";
 import { Text } from "../../components/Text";
 
 export function PlanejamentoAulasHome() {
@@ -128,7 +129,7 @@ export function PlanejamentoAulasHome() {
   }
 
   return (
-    <div className="flex min-h-0 w-full flex-1 flex-col p-8">
+    <PageContainer>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <Text preset="headline_32/40" fontWeight="bold" color="black">
           Planejamento de Aulas
@@ -191,6 +192,6 @@ export function PlanejamentoAulasHome() {
         existingLessons={lessons}
         onCreate={handleCreateLesson}
       />
-    </div>
+    </PageContainer>
   );
 }

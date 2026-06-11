@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { TeacherCard } from "../../components/Cards/TeacherCard";
 import type { Teacher } from "../../components/Cards/TeacherCard";
+import { PageContainer } from "../../components/Layout/PageContainer";
 import { Text } from "../../components/Text";
 import { fetchTeachers } from "../../data/teachers";
 import { useToast } from "../../contexts/ToastContext";
@@ -27,7 +28,7 @@ export function Professores() {
   }, [showToast]);
 
   return (
-    <div className="flex min-h-0 w-full flex-1 flex-col p-8">
+    <PageContainer>
       <Text preset="headline_32/40" fontWeight="bold" color="black">
         Professores
       </Text>
@@ -49,6 +50,6 @@ export function Professores() {
           ))}
         </ul>
       )}
-    </div>
+    </PageContainer>
   );
 }

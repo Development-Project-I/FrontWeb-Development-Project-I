@@ -2,6 +2,7 @@ import { Button } from "../../components/Button";
 import { ReportStatCard } from "../../components/Cards/ReportStatCard";
 import type { ReportStatAccent } from "../../components/Cards/ReportStatCard";
 import { ReportsTable } from "../../components/Cards/ReportsTable";
+import { PageContainer } from "../../components/Layout/PageContainer";
 import { Text } from "../../components/Text";
 
 interface ReportSummaryItem {
@@ -38,7 +39,7 @@ const summaryItems: ReportSummaryItem[] = [
 
 export function Relatorios() {
   return (
-    <div className="flex min-h-0 w-full flex-1 flex-col p-8">
+    <PageContainer>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <Text preset="headline_32/40" fontWeight="bold" color="black">
           Relatórios
@@ -64,6 +65,6 @@ export function Relatorios() {
       </div>
 
       <ReportsTable className="mt-8" />
-    </div>
+    </PageContainer>
   );
 }
