@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "../../components/Button";
 import { UserCard } from "../../components/Cards/UserCard";
 import { UserFilters } from "../../components/Cards/UserFilters";
@@ -20,6 +21,10 @@ import {
   userRoleToAccessType,
 } from "../../utils/apiMappers";
 import type { UserListRow } from "../../components/Cards/UsersTable";
+import {
+  OPEN_MODAL,
+  type AppLocationState,
+} from "../../constants/navigationState";
 
 function parseLastAccess(value: string): number {
   if (value === "—") return 0;
@@ -44,6 +49,8 @@ function buildSummary(rows: UserListRow[]) {
 }
 
 export function Users() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const { showToast } = useToast();
   const [createOpen, setCreateOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
@@ -73,6 +80,14 @@ export function Users() {
   useEffect(() => {
     void loadUsers();
   }, [loadUsers]);
+
+  useEffect(() => {
+    const state = location.state as AppLocationState | null;
+    if (state?.openModal !== OPEN_MODAL.CREATE_USER) return;
+
+    setCreateOpen(true);
+    navigate(`${location.pathname}${location.search}`, { replace: true, state: null });
+  }, [location.pathname, location.search, location.state, navigate]);
 
   const summaryItems = useMemo(() => buildSummary(rows), [rows]);
 

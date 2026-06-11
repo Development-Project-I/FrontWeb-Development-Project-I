@@ -24,6 +24,10 @@ import type { Teacher } from "../../components/Cards/TeacherCard";
 import { Icon } from "../../components/Icon";
 import { PageContainer } from "../../components/Layout/PageContainer";
 import { Text } from "../../components/Text";
+import {
+  OPEN_MODAL,
+  type AppLocationState,
+} from "../../constants/navigationState";
 
 export function PlanejamentoAulasHome() {
   const navigate = useNavigate();
@@ -87,6 +91,14 @@ export function PlanejamentoAulasHome() {
     void loadLessons();
     void loadTeachers();
   }, [loadLessons, loadTeachers, location.pathname, location.key]);
+
+  useEffect(() => {
+    const state = location.state as AppLocationState | null;
+    if (state?.openModal !== OPEN_MODAL.CREATE_LESSON) return;
+
+    setCreateLessonOpen(true);
+    navigate(`${location.pathname}${location.search}`, { replace: true, state: null });
+  }, [location.pathname, location.search, location.state, navigate]);
 
   const nextLesson = useMemo(
     () => findNextScheduledLesson(lessons),

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "../../components/Button";
 import { InventoryStatCard } from "../../components/Cards/InventoryStatCard";
 import { StockFilters } from "../../components/Cards/StockFilters";
@@ -22,6 +23,10 @@ import {
   applyQuantityAndStatus,
   parseDateBr,
 } from "../../utils/stockRow";
+import {
+  OPEN_MODAL,
+  type AppLocationState,
+} from "../../constants/navigationState";
 
 function expirationBaseTone(item: StockProductRow): ExpirationTone {
   return item.expirationTone;
@@ -37,6 +42,8 @@ function matchesValidity(item: StockProductRow, validity: string): boolean {
 }
 
 export function Estoque() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const { showToast } = useToast();
   const [products, setProducts] = useState<StockProductRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -66,6 +73,14 @@ export function Estoque() {
   useEffect(() => {
     void loadProducts();
   }, [loadProducts]);
+
+  useEffect(() => {
+    const state = location.state as AppLocationState | null;
+    if (state?.openModal !== OPEN_MODAL.ADD_STOCK_ITEM) return;
+
+    setAddOpen(true);
+    navigate(`${location.pathname}${location.search}`, { replace: true, state: null });
+  }, [location.pathname, location.search, location.state, navigate]);
 
   const summary = useMemo(() => {
     const validityAlerts = products.filter((p) => {
