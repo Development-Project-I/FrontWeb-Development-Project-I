@@ -111,8 +111,8 @@ export function Login() {
               GastroPlan
             </h1>
             <p className="preset-body_16/24 mt-2 max-w-sm text-white/90">
-              Sistema de gerenciamento gastronômico para cozinhas escolares e
-              formação culinária.
+              Sistema de gerenciamento de estoque e planejamento de aulas
+              gastronômicas.
             </p>
 
             <ul className="mt-8 flex flex-col gap-3">
