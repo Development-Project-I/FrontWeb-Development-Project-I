@@ -1,11 +1,10 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import { SettingsCard } from "../../components/Cards/SettingsCard";
 import type { SettingsCardAccent } from "../../components/Cards/SettingsCard";
 import { SystemInfoCard } from "../../components/Cards/SystemInfoCard";
 import { AppearanceModal } from "../../components/Modals/AppearanceModal";
 import { EditUserModal } from "../../components/Modals/EditUserModal";
 import type { AccessType } from "../../components/Modals/CreateUserModal";
-import { ApiUserRole } from "../../constants/apiUserRole";
 import { useAppearance } from "../../contexts/AppearanceContext";
 import { useAuth } from "../../contexts/AuthContext";
 import { useToast } from "../../contexts/ToastContext";
@@ -81,8 +80,6 @@ interface ProfileFormData {
   accessType: AccessType;
 }
 
-const sharedActions = new Set<SettingsItem["action"]>(["profile", "appearance"]);
-
 export function Configuracoes() {
   const { user, updateUser } = useAuth();
   const { settings, updateSettings } = useAppearance();
@@ -91,11 +88,6 @@ export function Configuracoes() {
   const [appearanceOpen, setAppearanceOpen] = useState(false);
   const [profileData, setProfileData] = useState<ProfileFormData | null>(null);
   const [loadingProfile, setLoadingProfile] = useState(false);
-
-  const visibleSettings = useMemo(() => {
-    if (user?.role === ApiUserRole.ADMIN) return allSettingsItems;
-    return allSettingsItems.filter((item) => sharedActions.has(item.action));
-  }, [user?.role]);
 
   const buildProfileData = useCallback(
     (
@@ -215,7 +207,7 @@ export function Configuracoes() {
       </Text>
 
       <ul className="mt-8 grid w-full grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {visibleSettings.map((item) => (
+        {allSettingsItems.map((item) => (
           <li key={item.id}>
             <SettingsCard
               icon={item.icon}

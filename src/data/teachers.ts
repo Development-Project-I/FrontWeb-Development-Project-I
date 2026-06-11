@@ -9,14 +9,3 @@ export async function fetchTeachers(): Promise<Teacher[]> {
     .filter((user) => user.role === ApiUserRole.PROFESSOR)
     .map(mapApiUserToTeacher);
 }
-
-export async function getTeacherNameById(
-  professorId: string,
-): Promise<string | undefined> {
-  try {
-    const { data } = await usersService.getUserById(professorId);
-    return [data.name, data.sobrenome].filter(Boolean).join(" ").trim();
-  } catch {
-    return undefined;
-  }
-}
