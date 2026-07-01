@@ -10,9 +10,7 @@ export interface StockProductRow {
   name: string;
   unit: string;
   category: string;
-  batch: string;
   quantity: number;
-  minStock?: number;
   expirationDate: string;
   expirationLabel: string;
   expirationTone: ExpirationTone;
@@ -64,7 +62,6 @@ export function StockTable({ rows, onEdit, className }: StockTableProps) {
               {[
                 { label: "Nome do item", align: "left" },
                 { label: "Categoria", align: "left" },
-                { label: "Lote", align: "left" },
                 { label: "Quantidade", align: "left" },
                 { label: "Uni", align: "center" },
                 { label: "Validade", align: "left" },
@@ -88,7 +85,7 @@ export function StockTable({ rows, onEdit, className }: StockTableProps) {
             {rows.length === 0 ? (
               <tr>
                 <td
-                  colSpan={8}
+                  colSpan={7}
                   className="preset-body_14/20 px-4 py-10 text-center text-neutral-500"
                 >
                   Nenhum item encontrado.
@@ -120,9 +117,6 @@ export function StockTable({ rows, onEdit, className }: StockTableProps) {
                   </td>
                   <td className="preset-body_14/20 px-4 py-3 align-middle text-neutral-800">
                     {row.category}
-                  </td>
-                  <td className="preset-body_14/20 px-4 py-3 align-middle text-neutral-500">
-                    {row.batch}
                   </td>
                   <td className="preset-body_14/20 px-4 py-3 align-middle font-bold text-neutral-900">
                     {row.quantity}

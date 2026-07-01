@@ -9,8 +9,6 @@ export interface ApiInventoryItem {
   quantity: number;
   expiryDate: string;
   unit: string;
-  minStock: number;
-  batchNumber?: string | null;
   status?: string;
 }
 
@@ -20,8 +18,6 @@ export interface CreateInventoryDto {
   quantity: number;
   expiryDate: string;
   unit: string;
-  minStock: number;
-  batchNumber?: string;
 }
 
 export interface UpdateInventoryDto {
@@ -30,8 +26,6 @@ export interface UpdateInventoryDto {
   quantity?: number;
   expiryDate?: string;
   unit?: string;
-  minStock?: number;
-  batchNumber?: string;
 }
 
 export type ApiUserStatus = "ATIVO" | "INATIVO";
@@ -87,9 +81,7 @@ export interface AulaInventoryItem {
   requiredUnit: string;
   availableQuantity: number;
   stockUnit: string;
-  minStock?: number;
   expiryDate?: string;
-  batchNumber?: string | null;
   stockStatus?: ApiStockStatus;
   itemInInventory?: boolean;
 }

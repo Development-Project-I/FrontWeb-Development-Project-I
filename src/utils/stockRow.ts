@@ -4,7 +4,6 @@ import type {
   StockRowStatus,
   StockRowVariant,
 } from "../components/Cards/StockTable";
-import type { AddStockItemPayload } from "../components/Modals/AddStockItemModal";
 
 export function normalizeStockName(name: string): string {
   return name.trim().toLowerCase();
@@ -20,21 +19,8 @@ export function isoToBr(iso: string): string {
   return `${d}/${m}/${y}`;
 }
 
-export function resolveMinStock(
-  row: Pick<StockProductRow, "quantity" | "minStock">,
-  fallback?: number,
-): number {
-  if (row.minStock != null) return row.minStock;
-  if (fallback != null) return fallback;
-  return Math.max(10, Math.ceil(row.quantity * 0.2));
-}
-
-export function computeStockStatus(
-  quantity: number,
-  minStock: number,
-): StockRowStatus {
-  if (quantity === 0 || quantity < minStock) return "Baixo";
-  return "OK";
+export function computeStockStatus(quantity: number): StockRowStatus {
+  return quantity === 0 ? "Baixo" : "OK";
 }
 
 export function computeExpirationMeta(
@@ -116,10 +102,11 @@ export function applyRowPresentation(
 }
 
 export function buildProductRow(
-  partial: Omit<StockProductRow, "rowVariant" | "clockTone">,
+  partial: Omit<StockProductRow, "rowVariant" | "clockTone" | "status"> & {
+    status?: StockRowStatus;
+  },
 ): StockProductRow {
-  const minStock = resolveMinStock(partial);
-  const status = computeStockStatus(partial.quantity, minStock);
+  const status = partial.status ?? computeStockStatus(partial.quantity);
   const expiration = computeExpirationMeta(
     partial.expirationDate,
     partial.quantity,
@@ -127,7 +114,6 @@ export function buildProductRow(
 
   return applyRowPresentation({
     ...partial,
-    minStock,
     status,
     ...expiration,
   });
@@ -136,40 +122,13 @@ export function buildProductRow(
 export function applyQuantityAndStatus(
   row: StockProductRow,
   quantity: number,
-  minStock?: number,
 ): StockProductRow {
-  const resolvedMin = minStock ?? resolveMinStock(row);
-  const status = computeStockStatus(quantity, resolvedMin);
+  const status = computeStockStatus(quantity);
   const expiration = computeExpirationMeta(row.expirationDate, quantity);
 
   return applyRowPresentation({
     ...row,
     quantity,
-    minStock: resolvedMin,
-    status,
-    ...expiration,
-  });
-}
-
-export function mergeStockAddition(
-  existing: StockProductRow,
-  payload: AddStockItemPayload,
-): StockProductRow {
-  const newQuantity = existing.quantity + payload.quantity;
-  const minStock = resolveMinStock(existing);
-  const expirationDateBr = isoToBr(payload.expirationDate);
-  const batch = payload.batch.trim() || existing.batch;
-  const status = computeStockStatus(newQuantity, minStock);
-  const expiration = computeExpirationMeta(expirationDateBr, newQuantity);
-
-  return applyRowPresentation({
-    ...existing,
-    name: payload.name.trim(),
-    category: payload.category,
-    unit: payload.unit,
-    quantity: newQuantity,
-    minStock,
-    batch,
     status,
     ...expiration,
   });

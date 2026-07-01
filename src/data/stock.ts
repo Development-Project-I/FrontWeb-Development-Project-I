@@ -15,7 +15,6 @@ export async function fetchStockCatalog(): Promise<StockCatalogItem[]> {
       category: item.category,
       unit: item.unit,
       quantity: item.quantity,
-      minStock: item.minStock ?? 0,
       expirationDate: expiryBr,
       expirationLabel: expiration.expirationLabel,
       expirationTone: expiration.expirationTone,

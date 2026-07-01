@@ -12,16 +12,6 @@ import { inventoryService } from "../../../services/inventory.service";
 import { Button } from "../../Button";
 import { Icon } from "../../Icon";
 
-export interface AddStockItemPayload {
-  name: string;
-  category: StockCategory;
-  unit: StockUnit;
-  quantity: number;
-  minStock: number;
-  expirationDate: string;
-  batch: string;
-}
-
 export interface AddStockItemModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -46,18 +36,14 @@ export function AddStockItemModal({
   const [category, setCategory] = useState<StockCategory>(STOCK_CATEGORIES[0]);
   const [unit, setUnit] = useState<StockUnit>("kg");
   const [quantity, setQuantity] = useState("");
-  const [minStock, setMinStock] = useState("");
   const [expirationDate, setExpirationDate] = useState("");
-  const [batch, setBatch] = useState("");
 
   const reset = useCallback(() => {
     setName("");
     setCategory(STOCK_CATEGORIES[0]);
     setUnit("kg");
     setQuantity("");
-    setMinStock("");
     setExpirationDate("");
-    setBatch("");
   }, []);
 
   useEffect(() => {
@@ -108,21 +94,10 @@ export function AddStockItemModal({
         return;
       }
 
-      const min = Number(minStock);
-
       if (Number.isNaN(qty) || qty < 0) {
         showToast(
           "Campos obrigatórios",
           "Informe uma quantidade válida.",
-          "warning",
-        );
-        return;
-      }
-
-      if (Number.isNaN(min) || min < 0) {
-        showToast(
-          "Campos obrigatórios",
-          "Informe o estoque mínimo.",
           "warning",
         );
         return;
@@ -137,8 +112,6 @@ export function AddStockItemModal({
           quantity: qty,
           expiryDate: expirationDate,
           unit,
-          minStock: min,
-          batchNumber: batch.trim() || undefined,
         });
 
         showToast(
@@ -158,18 +131,7 @@ export function AddStockItemModal({
         setIsSubmitting(false);
       }
     },
-    [
-      batch,
-      category,
-      expirationDate,
-      minStock,
-      name,
-      onSuccess,
-      onClose,
-      quantity,
-      showToast,
-      unit,
-    ],
+    [category, expirationDate, name, onSuccess, onClose, quantity, showToast, unit],
   );
 
   if (!isOpen) return null;
@@ -325,36 +287,6 @@ export function AddStockItemModal({
               </div>
               <div>
                 <label
-                  htmlFor={`${baseId}-minimo`}
-                  className="preset-body_14/20 mb-1.5 block font-medium text-neutral-800"
-                >
-                  Estoque Mínimo <span className="text-primary">*</span>
-                </label>
-                <div className="relative">
-                  <Icon
-                    name="TrendingDown"
-                    className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-neutral-400"
-                    strokeWidth={2}
-                    aria-hidden
-                  />
-                  <input
-                    id={`${baseId}-minimo`}
-                    type="number"
-                    required
-                    min={0}
-                    step="any"
-                    value={minStock}
-                    onChange={(e) => setMinStock(e.target.value)}
-                    placeholder="0"
-                    className={clsx(inputClass, "pl-10 pr-3")}
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div>
-                <label
                   htmlFor={`${baseId}-validade`}
                   className="preset-body_14/20 mb-1.5 block font-medium text-neutral-800"
                 >
@@ -377,29 +309,6 @@ export function AddStockItemModal({
                   />
                 </div>
               </div>
-              <div>
-                <label
-                  htmlFor={`${baseId}-lote`}
-                  className="preset-body_14/20 mb-1.5 block font-medium text-neutral-800"
-                >
-                  Número do Lote
-                </label>
-                <div className="relative">
-                  <Icon
-                    name="Tag"
-                    className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-neutral-400"
-                    strokeWidth={2}
-                    aria-hidden
-                  />
-                  <input
-                    id={`${baseId}-lote`}
-                    value={batch}
-                    onChange={(e) => setBatch(e.target.value)}
-                    placeholder="Ex: FT2024-045"
-                    className={clsx(inputClass, "pl-10 pr-3")}
-                  />
-                </div>
-              </div>
             </div>
 
             <div className="rounded-xl border border-blue-200 bg-blue-50/80 p-4 dark:border-slate-600 dark:bg-slate-800/80">
@@ -416,14 +325,10 @@ export function AddStockItemModal({
                   </p>
                   <ul className="preset-body_14/20 mt-2 list-disc space-y-1 pl-5 font-regular text-neutral-700">
                     <li>
-                      Quantidade = 0: <span className="font-semibold">Esgotado</span>
+                      Quantidade = 0: <span className="font-semibold">Baixo</span>
                     </li>
                     <li>
-                      Quantidade &lt; Estoque Mínimo:{" "}
-                      <span className="font-semibold">Baixo</span>
-                    </li>
-                    <li>
-                      Quantidade ≥ Estoque Mínimo:{" "}
+                      Quantidade &gt; 0:{" "}
                       <span className="font-semibold">OK</span>
                     </li>
                   </ul>

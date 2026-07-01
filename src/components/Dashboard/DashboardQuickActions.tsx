@@ -35,7 +35,7 @@ const quickActions: QuickAction[] = [
     openModal: OPEN_MODAL.ADD_STOCK_ITEM,
     icon: "PackagePlus",
     title: "Adicionar Item no estoque",
-    description: "Inclua um novo ingrediente com lote, validade e quantidade.",
+    description: "Inclua um novo ingrediente com validade e quantidade.",
     accent: "blue",
     roles: [ApiUserRole.ADMIN, ApiUserRole.ESTOQUISTA],
   },

@@ -97,15 +97,13 @@ export function userRoleToAccessType(role: UserRole): AccessType {
 function mapInventoryStatus(
   item: ApiInventoryItem,
 ): StockProductRow["status"] {
-  const min = item.minStock ?? 0;
-  if (item.quantity === 0 || item.quantity < min) return "Baixo";
+  if (item.quantity === 0) return "Baixo";
   if (item.status?.toLowerCase().includes("baixo")) return "Baixo";
   return "OK";
 }
 
 export function mapInventoryToStockRow(item: ApiInventoryItem): StockProductRow {
   const expiryBr = apiDateToBr(item.expiryDate);
-  const minStock = item.minStock ?? 0;
   const expiration = computeExpirationMeta(expiryBr, item.quantity);
 
   return applyRowPresentation({
@@ -113,9 +111,7 @@ export function mapInventoryToStockRow(item: ApiInventoryItem): StockProductRow 
     name: item.name,
     unit: item.unit,
     category: item.category,
-    batch: item.batchNumber?.trim() || "—",
     quantity: item.quantity,
-    minStock,
     status: mapInventoryStatus(item),
     ...expiration,
   });

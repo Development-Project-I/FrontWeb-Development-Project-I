@@ -6,7 +6,6 @@ export interface StockCatalogItem {
   category: string;
   unit: string;
   quantity: number;
-  minStock: number;
   expirationDate: string;
   expirationLabel: string;
   expirationTone: ExpirationTone;

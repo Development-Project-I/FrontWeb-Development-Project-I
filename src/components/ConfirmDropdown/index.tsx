@@ -62,11 +62,14 @@ export function ConfirmDropdown({
 }: ConfirmDropdownProps) {
   const panelId = useId();
   const containerRef = useRef<HTMLDivElement>(null);
-  const [position, setPosition] = useState<PanelPosition>({ top: 0, left: 0 });
   const usePortal = Boolean(anchorRef);
+  const [position, setPosition] = useState<PanelPosition | null>(null);
 
   useLayoutEffect(() => {
-    if (!isOpen || !anchorRef?.current) return;
+    if (!isOpen || !anchorRef?.current) {
+      setPosition(null);
+      return;
+    }
 
     const updatePosition = () => {
       if (!anchorRef.current) return;
@@ -107,6 +110,13 @@ export function ConfirmDropdown({
 
   if (!isOpen) return null;
 
+  const portalPosition =
+    usePortal && anchorRef?.current
+      ? getPanelPosition(anchorRef.current, placement)
+      : position;
+
+  if (usePortal && !portalPosition) return null;
+
   const panel = (
     <div
       ref={containerRef}
@@ -115,11 +125,11 @@ export function ConfirmDropdown({
       aria-modal="true"
       aria-labelledby={`${panelId}-message`}
       style={
-        usePortal
+        usePortal && portalPosition
           ? {
               position: "fixed",
-              top: position.top,
-              left: position.left,
+              top: portalPosition.top,
+              left: portalPosition.left,
               transform:
                 placement === "top"
                   ? "translate(-100%, -100%)"
@@ -128,7 +138,10 @@ export function ConfirmDropdown({
           : undefined
       }
       className={clsx(
-        "z-[9999] w-[min(100vw-2rem,300px)] rounded-xl border border-neutral-200 bg-white p-4 shadow-xl animate-in fade-in zoom-in-95 duration-150",
+        "z-[9999] w-[min(100vw-2rem,300px)] rounded-xl border border-neutral-200 bg-white p-4 shadow-xl dark:border-slate-700 dark:bg-slate-900",
+        usePortal
+          ? "animate-in fade-in duration-150"
+          : "animate-in fade-in zoom-in-95 duration-150",
         !usePortal && "absolute right-0",
         !usePortal &&
           (placement === "top"
@@ -138,7 +151,7 @@ export function ConfirmDropdown({
       )}
     >
       <div className="flex items-start gap-3">
-        <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-red-50">
+        <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-red-50 dark:bg-red-950/50">
           <Icon
             name="AlertTriangle"
             className="size-4 text-red-600"
@@ -148,7 +161,7 @@ export function ConfirmDropdown({
         </div>
         <p
           id={`${panelId}-message`}
-          className="preset-body_14/20 pt-1.5 font-medium text-neutral-800"
+          className="preset-body_14/20 pt-1.5 font-medium text-neutral-800 dark:text-slate-200"
         >
           {message}
         </p>
@@ -158,7 +171,7 @@ export function ConfirmDropdown({
           type="button"
           onClick={onClose}
           disabled={isLoading}
-          className="preset-button_16/24 rounded-lg border border-neutral-200 bg-white px-4 py-2 font-semibold text-neutral-700 transition hover:bg-neutral-50 disabled:opacity-50"
+          className="preset-button_16/24 rounded-lg border border-neutral-200 bg-white px-4 py-2 font-semibold text-neutral-700 transition hover:bg-neutral-50 disabled:opacity-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
         >
           {cancelLabel}
         </button>

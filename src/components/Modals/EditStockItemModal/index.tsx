@@ -8,7 +8,6 @@ import {
   type StockUnit,
 } from "../../../constants/inventory";
 import type { StockProductRow } from "../../Cards/StockTable";
-import { resolveMinStock } from "../../../utils/stockRow";
 import { Button } from "../../Button";
 import { ConfirmDropdown } from "../../ConfirmDropdown";
 import { Icon } from "../../Icon";
@@ -17,7 +16,6 @@ export interface EditStockItemPayload {
   name: string;
   category: StockCategory;
   unit: StockUnit;
-  minStock: number;
 }
 
 export interface EditStockItemModalProps {
@@ -53,22 +51,12 @@ function StockStatusInfoBox() {
           </p>
           <ul className="preset-body_14/20 mt-2 list-disc space-y-1 pl-5 font-regular text-neutral-700">
             <li>
-              Quantidade = 0: <span className="font-semibold">Esgotado</span>
+              Quantidade = 0: <span className="font-semibold">Baixo</span>
             </li>
             <li>
-              Quantidade &lt; Estoque Mínimo:{" "}
-              <span className="font-semibold">Baixo</span>
-            </li>
-            <li>
-              Quantidade ≥ Estoque Mínimo:{" "}
-              <span className="font-semibold">OK</span>
+              Quantidade &gt; 0: <span className="font-semibold">OK</span>
             </li>
           </ul>
-          <p className="preset-body_12/16 mt-3 text-neutral-600">
-            A quantidade é somada ao adicionar o mesmo item de novo. A validade
-            exibida passa a ser a data informada na última entrada. O estoque
-            mínimo definido aqui vale nas próximas entradas.
-          </p>
         </div>
       </div>
     </div>
@@ -86,7 +74,6 @@ export function EditStockItemModal({
   const [name, setName] = useState("");
   const [category, setCategory] = useState<StockCategory>(STOCK_CATEGORIES[0]);
   const [unit, setUnit] = useState<StockUnit>("kg");
-  const [minStock, setMinStock] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
 
@@ -95,7 +82,6 @@ export function EditStockItemModal({
     setName(product.name);
     setCategory(product.category as StockCategory);
     setUnit(product.unit as StockUnit);
-    setMinStock(String(resolveMinStock(product)));
   }, [product]);
 
   useEffect(() => {
@@ -130,7 +116,6 @@ export function EditStockItemModal({
       name: name.trim(),
       category,
       unit,
-      minStock: Number(minStock) || 0,
     });
     onClose();
   }
@@ -287,62 +272,19 @@ export function EditStockItemModal({
               </div>
               <div>
                 <label
-                  htmlFor={`${baseId}-minimo`}
+                  htmlFor={`${baseId}-validade`}
                   className="preset-body_14/20 mb-1.5 block font-medium text-neutral-800"
                 >
-                  Estoque Mínimo <span className="text-primary">*</span>
+                  Data de Validade
                 </label>
-                <div className="relative">
-                  <Icon
-                    name="TrendingDown"
-                    className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-neutral-400"
-                    strokeWidth={2}
-                    aria-hidden
-                  />
-                  <input
-                    id={`${baseId}-minimo`}
-                    type="number"
-                    required
-                    min={0}
-                    step="any"
-                    value={minStock}
-                    onChange={(e) => setMinStock(e.target.value)}
-                    className={clsx(inputClass, "pl-10 pr-3")}
-                  />
-                </div>
+                <input
+                  id={`${baseId}-validade`}
+                  readOnly
+                  value={product.expirationDate}
+                  className={readOnlyClass}
+                  aria-readonly
+                />
               </div>
-            </div>
-
-            <div>
-              <label
-                htmlFor={`${baseId}-lote`}
-                className="preset-body_14/20 mb-1.5 block font-medium text-neutral-800"
-              >
-                Lote
-              </label>
-              <input
-                id={`${baseId}-lote`}
-                readOnly
-                value={product.batch}
-                className={readOnlyClass}
-                aria-readonly
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor={`${baseId}-validade`}
-                className="preset-body_14/20 mb-1.5 block font-medium text-neutral-800"
-              >
-                Data de Validade
-              </label>
-              <input
-                id={`${baseId}-validade`}
-                readOnly
-                value={product.expirationDate}
-                className={readOnlyClass}
-                aria-readonly
-              />
             </div>
 
             <StockStatusInfoBox />

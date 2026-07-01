@@ -88,13 +88,11 @@ export function Estoque() {
       return tone === "red" || tone === "amber";
     }).length;
     const missingItems = products.filter((p) => p.quantity === 0).length;
-    const lowStock = products.filter((p) => p.status === "Baixo").length;
 
     return {
       total: products.length,
       validityAlerts,
       missingItems,
-      lowStock,
     };
   }, [products]);
 
@@ -106,8 +104,7 @@ export function Estoque() {
         term.length === 0 ||
         item.name.toLowerCase().includes(term) ||
         item.unit.toLowerCase().includes(term) ||
-        item.category.toLowerCase().includes(term) ||
-        item.batch.toLowerCase().includes(term);
+        item.category.toLowerCase().includes(term);
 
       const matchesCategory =
         category === "all" || item.category === category;
@@ -152,7 +149,6 @@ export function Estoque() {
         name: payload.name.trim(),
         category: payload.category,
         unit: payload.unit,
-        minStock: payload.minStock,
       });
 
       setProducts((prev) =>
@@ -166,7 +162,6 @@ export function Estoque() {
               unit: payload.unit,
             },
             p.quantity,
-            payload.minStock,
           );
         }),
       );
@@ -220,7 +215,7 @@ export function Estoque() {
         onDelete={handleDeleteProduct}
       />
 
-      <div className="mt-8 grid w-full grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="mt-8 grid w-full grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
         <InventoryStatCard
           icon="Package"
           label="Total de Itens"
@@ -240,13 +235,6 @@ export function Estoque() {
           label="Itens em Falta"
           value={summary.missingItems}
           accent="red"
-          isLoading={loading}
-        />
-        <InventoryStatCard
-          icon="AlertTriangle"
-          label="Estoque Baixo"
-          value={summary.lowStock}
-          accent="amber"
           isLoading={loading}
         />
       </div>
