@@ -310,31 +310,6 @@ export function AddStockItemModal({
                 </div>
               </div>
             </div>
-
-            <div className="rounded-xl border border-blue-200 bg-blue-50/80 p-4 dark:border-slate-600 dark:bg-slate-800/80">
-              <div className="flex gap-2">
-                <Icon
-                  name="Info"
-                  className="mt-0.5 size-5 shrink-0 text-blue-600"
-                  strokeWidth={2}
-                  aria-hidden
-                />
-                <div>
-                  <p className="preset-body_14/20 font-bold text-neutral-900">
-                    O status é calculado automaticamente:
-                  </p>
-                  <ul className="preset-body_14/20 mt-2 list-disc space-y-1 pl-5 font-regular text-neutral-700">
-                    <li>
-                      Quantidade = 0: <span className="font-semibold">Baixo</span>
-                    </li>
-                    <li>
-                      Quantidade &gt; 0:{" "}
-                      <span className="font-semibold">OK</span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
           </div>
 
           <footer className="flex shrink-0 flex-col-reverse gap-3 bg-white px-6 pb-5 pt-4 dark:bg-slate-900 sm:flex-row sm:justify-between">
